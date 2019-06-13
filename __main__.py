@@ -16,13 +16,9 @@ Options:
 """
 
 import gym
-import os
 from docopt import docopt
 import importlib.util
-from shutil import copyfile
-from datetime import datetime
 from wrapper.obs import ObservationZoneWrapper
-from agent.agent import Agent
 
 
 class Experiment(object):
@@ -53,13 +49,10 @@ class Experiment(object):
         """
         :return: the agent with parameters specified in the parameters
         """
+        Agent = getattr(importlib.import_module("agent." + self.parameters["agent_file"]), self.parameters["agent_name"])
         return Agent(action_space=range(self.env.action_space.n), parameters=self.parameters)
 
     def run(self):
-        # Create results/ folder (if needed)
-        results_folder = "results/results_%s_%s" % ("Montezuma", datetime.now().strftime('%Y-%m-%d_%H%M%S'))
-        os.makedirs(results_folder)
-
         # loop on the seed to simulate the agent
         for seed in self.parameters["seeds"]:
             self.env.seed(seed)
@@ -67,11 +60,11 @@ class Experiment(object):
             # first, train the agent
             self.agent.train_agent(self.env, seed)
 
+            # wait for the signal to run the simulation
+            input("PRESS ANY KEY")
+
             # set the simulate environment and test the agent
             self.agent.simulate_agent(self.env, seed)
-
-        # copy the protocol file in the results file
-        copyfile(self.parameters["path"], results_folder + "/protocol.py")
 
 
 if __name__ == '__main__':

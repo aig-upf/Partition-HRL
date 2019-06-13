@@ -5,7 +5,7 @@ from ao.examples.policy_examples_agent import QGraph
 import numpy as np
 
 
-class Agent(AgentOptionMontezuma):
+class AgentQMontezuma(AgentOptionMontezuma):
 
     def compute_total_reward(self, o_r_d_i, option_index, train_episode):
         """
@@ -46,7 +46,6 @@ class Agent(AgentOptionMontezuma):
         :return:
         """
         # The initial observation
-        print(len(self))
         obs = environment.reset()
         o_r_d_i = [obs]
 
@@ -120,7 +119,7 @@ class Option(OptionQArray):
         """
         total_reward = super().compute_total_reward(o_r_d_i, action, end_option)
         total_reward += (action != 0) * self.parameters["penalty_option_action"]
-        total_reward += (action == 0) * self.parameters["penalty_option_action"] / 10
+        total_reward += (action == 0) * self.parameters["penalty_option_idle"]
         total_reward += o_r_d_i[2] * self.parameters["penalty_death_option"]
 
         return total_reward
@@ -148,22 +147,10 @@ class Policy(QGraph):
             else:
                 return super().find_best_action(train_episode)
 
+    def _update_states(self, state):
+        novel = True
+        if novel:
+            super()._update_states(state)
 
-class OptionDQN(OptionAbstract):
-    """
-    TODO
-    """
-    def update_option(self, *args, **kwargs):
-        pass
-
-    def act(self, *args, **kwargs):
-        pass
-
-    def reset(self, *args, **kwargs):
-        pass
-
-    def compute_total_reward(self, *args, **kwargs):
-        pass
-
-    def compute_total_score(self, *args, **kwargs):
-        pass
+        else:
+            pass

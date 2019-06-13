@@ -1,5 +1,5 @@
-data = {
-        "agent_file": "agent",  # agent class name must be Agent
+data = {"agent_name": "AgentDQN",
+        "agent_file": "agent_dqn",  # agent class name must be Agent
 
         "seeds": [0],
         "number_episodes": 3000,
@@ -10,7 +10,7 @@ data = {
         "penalty_option_action": -1,
         "penalty_option_idle": -0.5,
 
-        "learning_rate": 0.04,
+        "learning_rate": 0.9,
         "reward_end_option": 100,
         "penalty_end_option": -100,
 
