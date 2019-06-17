@@ -59,7 +59,7 @@ class OptionDQN(OptionAbstract):
 
     def act(self):
         self.epsilon = max(self.epsilon_min, self.epsilon * self.epsilon_decay)
-        #select random action with prob=epsilon else action=maxQ
+        # select random action with prob=epsilon else action=maxQ
 
         if np.random.rand() <= self.epsilon:
             return np.random.randint(self.action_size)
