@@ -33,7 +33,7 @@ class AgentQMontezuma(AgentOptionMontezuma):
     def get_policy(self):
         return Policy(self.parameters)
 
-    def _train_simulate_agent(self, environment, train_episode=None):
+    def _train_simulate_agent(self, env, train_episode=None):
         """
         Method used to train or simulate the agent
 
@@ -41,21 +41,18 @@ class AgentQMontezuma(AgentOptionMontezuma):
         b) option acts and updates
         c) if a new state is found then update agent
 
-        :param environment:
         :param train_episode: the episode of training.
         :return:
         """
         # The initial observation
-        obs = environment.reset()
+        obs = env.reset()
         o_r_d_i = [obs]
-
         # Reset all the parameters
         self.reset(o_r_d_i[0]["agent"])
         done = False
         current_option = None
-
         # Render the current state
-        self.display_state(environment, train_episode)
+        self.show_render.display()
 
         while not done:
             # If no option is activated then choose one
@@ -67,9 +64,9 @@ class AgentQMontezuma(AgentOptionMontezuma):
 
             # make an action and display the state space
             # todo record the learning curve
-            o_r_d_i = environment.step(action)
+            o_r_d_i = env.step(action)
 
-            self.display_state(environment, train_episode)
+            self.show_render.display()
 
             # update the option
             current_option.update_option(o_r_d_i, action, train_episode)
@@ -77,12 +74,12 @@ class AgentQMontezuma(AgentOptionMontezuma):
             # check if the option ended
             end_option = current_option.check_end_option(o_r_d_i[0]["agent"])
 
-            done = self.check_end_agent(o_r_d_i, current_option, train_episode)
-
             # If the option is done, update the agent
             if end_option:
                 self.update_agent(o_r_d_i, current_option, train_episode)
                 current_option = None
+
+            done = self.check_end_agent(o_r_d_i, current_option, train_episode)
 
 
 class Option(OptionQArray):

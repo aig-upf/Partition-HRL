@@ -1,5 +1,5 @@
 data = {"agent_name": "AgentDQN",
-        "agent_file": "agent_dqn",  # agent class name must be Agent
+        "agent_file": "agent_dqn",
 
         "seeds": [0],
         "number_episodes": 3000,

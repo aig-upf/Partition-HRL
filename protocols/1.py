@@ -1,9 +1,9 @@
 data = {
-        "agent_file": "agent",  # agent class name must be Agent
+        "agent_file": "agent",
         "agent_name": "AgentQMontezuma",
 
         "seeds": [0],
-        "number_episodes": 3000,
+        "number_episodes": 3,
         "probability_random_action_agent": 0.1,
         "probability_random_action_option": 0.1,
 

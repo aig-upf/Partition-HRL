@@ -37,25 +37,27 @@ class Experiment(object):
         :return: the environment with parameters specified in the protocol
         """
         env = gym.make("MontezumaRevenge-v0").env
-        return ObservationZoneWrapper(env,
-                                      zone_size_option_x=self.parameters["ZONE_SIZE_OPTION_X"],
-                                      zone_size_option_y=self.parameters["ZONE_SIZE_OPTION_Y"],
-                                      zone_size_agent_x=self.parameters["ZONE_SIZE_AGENT_X"],
-                                      zone_size_agent_y=self.parameters["ZONE_SIZE_AGENT_Y"],
-                                      thresh_binary_option=self.parameters["THRESH_BINARY_OPTION"],
-                                      thresh_binary_agent=self.parameters["THRESH_BINARY_AGENT"])
+        try:
+            return ObservationZoneWrapper(env,
+                                          zone_size_option_x=self.parameters["ZONE_SIZE_OPTION_X"],
+                                          zone_size_option_y=self.parameters["ZONE_SIZE_OPTION_Y"],
+                                          zone_size_agent_x=self.parameters["ZONE_SIZE_AGENT_X"],
+                                          zone_size_agent_y=self.parameters["ZONE_SIZE_AGENT_Y"],
+                                          thresh_binary_option=self.parameters["THRESH_BINARY_OPTION"],
+                                          thresh_binary_agent=self.parameters["THRESH_BINARY_AGENT"])
+        except KeyError:
+            return env
 
     def get_agent(self):
         """
         :return: the agent with parameters specified in the parameters
         """
-        Agent = getattr(importlib.import_module("agent." + self.parameters["agent_file"]), self.parameters["agent_name"])
-        return Agent(action_space=range(self.env.action_space.n), parameters=self.parameters)
+        agent = getattr(importlib.import_module("agent." + self.parameters["agent_file"]), self.parameters["agent_name"])
+        return agent(action_space=range(self.env.action_space.n), parameters=self.parameters)
 
     def run(self):
         # loop on the seed to simulate the agent
         for seed in self.parameters["seeds"]:
-            self.env.seed(seed)
 
             # first, train the agent
             self.agent.train_agent(self.env, seed)
