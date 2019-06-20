@@ -14,8 +14,7 @@ class SharedConvLayers(keras.Model):
         self.flatten = keras.layers.Flatten()
         self.dense = keras.layers.Dense(512)
 
-    def call(self, x):
-
+    def call(self, x, training=None, mask=None):
         x = self.conv1(x)
         x = self.conv2(x)
         x = self.conv3(x)
@@ -29,7 +28,7 @@ class SharedDenseLayers(keras.Model):
         super(SharedDenseLayers, self).__init__(name="SharedDenseLayers")
         self.dense = keras.layers.Dense(64, activation='elu')
 
-    def call(self, x):
+    def call(self, x, training=None, mask=None):
 
         x = self.dense(x)
 
@@ -43,10 +42,9 @@ class CriticNetwork(keras.Model):
         self.out = keras.layers.Dense(1, activation='linear')
         self.shared_observation_model = shared_observation_model
 
-    def call(self, x):
+    def call(self, x, training=None, mask=None):
 
         if self.shared_observation_model is not None:
-
             x = self.shared_observation_model(x)
 
         x = self.dense1(x)
@@ -61,7 +59,7 @@ class ActorNetwork(keras.Model):
         self.out = keras.layers.Dense(n_actions, activation=keras.activations.softmax)
         self.shared_observation_model = shared_observation_model
 
-    def call(self, x):
+    def call(self, x, training=None, mask=None):
 
         if self.shared_observation_model is not None:
 
@@ -130,7 +128,7 @@ class A2CEager:
             loss_ce = Losses.entropy_exploration_loss(outputs)
             loss_value = loss_pg - weight_ce * loss_ce
 
-        #print(outputs.numpy(), loss_pg.numpy(), loss_ce.numpy(), loss_value.numpy())
+        # print(outputs.numpy(), loss_pg.numpy(), loss_ce.numpy(), loss_value.numpy())
 
         return loss_value, tape.gradient(loss_value, model.trainable_variables)
 
@@ -148,22 +146,22 @@ class A2CEager:
 
         loss_value, grads = self.grad_critic(self.model_critic, s, y)
 
-        #print("CRITIC", loss_value)
+        # print("CRITIC", loss_value)
 
-        #grads, grad_norm = tf.clip_by_global_norm(grads, max_grad_norm)
+        # grads, grad_norm = tf.clip_by_global_norm(grads, max_grad_norm)
 
         self.optimizer_critic.apply_gradients(zip(grads, self.model_critic.trainable_variables), self.global_step)
 
         return [None, None]
 
-    def train_actor(self, s, one_hot_a, advantage, weight_ce = 0, max_grad_norm=0.5):
+    def train_actor(self, s, one_hot_a, advantage, weight_ce=0, max_grad_norm=0.5):
         s = np.array(s, dtype=np.float32)
 
         loss_value, grads = self.grad_actor(self.model_actor, s, one_hot_a, advantage, weight_ce)
 
-        #print("ACTOR", loss_value)
+        # print("ACTOR", loss_value)
 
-        #grads, grad_norm = tf.clip_by_global_norm(grads, max_grad_norm)
+        # grads, grad_norm = tf.clip_by_global_norm(grads, max_grad_norm)
 
         self.optimizer_actor.apply_gradients(zip(grads, self.model_actor.trainable_variables),
                                              self.global_step)

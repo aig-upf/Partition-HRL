@@ -7,3 +7,4 @@ numpy==1.15.4
 python_dateutil==2.8.0
 atari_py
 tensorflow
+matplotlib
