@@ -19,6 +19,16 @@ import gym
 from docopt import docopt
 import importlib.util
 from wrapper.obs import ObservationZoneWrapper
+import tensorflow as tf
+import os
+
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
+tf.enable_eager_execution()
+
+# Just to be sure that we don't have some others graph loaded
+tf.reset_default_graph()
 
 
 class Experiment(object):

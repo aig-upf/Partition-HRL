@@ -1,31 +1,32 @@
+from agent.models import SharedConvLayers
+
+shared_conv_layers = SharedConvLayers()
+
+
+
+
 data = {
         "agent_file": "agent_a2c",
-        "agent_name": "",
+        "agent_name": "AgentA2C",
 
         "seeds": [0],
         "number_episodes": 10000,
 
         # please check the values below
-        "learning_rate_actor": 0,
-        "learning_rate_critic": 0,
         "DEVICE": 'cpu:0',
         "GAMMA": 0.99,
         "LEARNING_RATE_ACTOR": 0.00001,
         "LEARNING_RATE_CRITIC": 0.0001,
-        "RESULTS_FOLDER": './results/',
-        "FILE_NAME": 'testMazeOptionsAC.pkl',
         "BATCH_SIZE": 32,
         "WEIGHT_CE_EXPLORATION": 0.01,
+        "SHARED_CONVOLUTION_LAYERS": shared_conv_layers,
 
         # do we need this ?
         "probability_random_action_agent": 0.1,
-        "probability_random_action_option": 0.1,
-        "random_decay": 0.01,
-        "penalty_death_option": -100,
-        "penalty_option_action": -1,
-        "penalty_option_idle": -1,
-        "reward_end_option": 100,
-        "penalty_end_option": -100,
+        "penalty_death_option": -1,
+        "penalty_option_action": -0.1,
+        "reward_end_option": 1,
+        "penalty_end_option": -1,
 
         # Montezuma's parameters
         "NUMBER_ZONES_MONTEZUMA_X": (2 ** 5) * 5,

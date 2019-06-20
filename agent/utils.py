@@ -26,6 +26,9 @@ class ExperienceReplay:
     def buffer_len(self):
         return len(self.buffer)
 
+    def reset_buffer(self):
+        self.buffer.clear()
+
 
 class Preprocessing:
 

@@ -93,7 +93,7 @@ class ObservationZoneWrapper(gym.ObservationWrapper):
         img_option_tuple = tuple(tuple(tuple(color) for color in lig) for lig in img_option)
         img_agent_tuple = tuple(tuple(tuple(color) for color in lig) for lig in img_agent)
 
-        return {"agent": hash(img_agent_tuple), "option": hash(img_option_tuple)}
+        return {"agent": hash(img_agent_tuple), "option": img_option}
 
     @staticmethod
     def make_gray_scale(image, threshold):

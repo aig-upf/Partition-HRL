@@ -4,6 +4,8 @@ import numpy as np
 from agent.losses import Losses
 import tensorflow.contrib.slim as slim
 
+import matplotlib.pyplot as plt
+
 
 class SharedConvLayers(keras.Model):
     def __init__(self):
@@ -14,7 +16,7 @@ class SharedConvLayers(keras.Model):
         self.flatten = keras.layers.Flatten()
         self.dense = keras.layers.Dense(512)
 
-    def call(self, x, training=None, mask=None):
+    def call(self, x):
         x = self.conv1(x)
         x = self.conv2(x)
         x = self.conv3(x)
@@ -28,7 +30,7 @@ class SharedDenseLayers(keras.Model):
         super(SharedDenseLayers, self).__init__(name="SharedDenseLayers")
         self.dense = keras.layers.Dense(64, activation='elu')
 
-    def call(self, x, training=None, mask=None):
+    def call(self, x):
 
         x = self.dense(x)
 
@@ -42,7 +44,7 @@ class CriticNetwork(keras.Model):
         self.out = keras.layers.Dense(1, activation='linear')
         self.shared_observation_model = shared_observation_model
 
-    def call(self, x, training=None, mask=None):
+    def call(self, x):
 
         if self.shared_observation_model is not None:
             x = self.shared_observation_model(x)
@@ -59,11 +61,17 @@ class ActorNetwork(keras.Model):
         self.out = keras.layers.Dense(n_actions, activation=keras.activations.softmax)
         self.shared_observation_model = shared_observation_model
 
-    def call(self, x, training=None, mask=None):
+    def call(self, x):
+
+        print(x.shape)
+        plt.imshow(x[0])
+        plt.show()
 
         if self.shared_observation_model is not None:
 
             x = self.shared_observation_model(x)
+
+        print(x.numpy().shape)
 
         x = self.dense1(x)
         x = self.out(x)
@@ -73,6 +81,8 @@ class ActorNetwork(keras.Model):
 class A2CEager:
 
     def __init__(self, input_shape, h_size, n_actions, scope_var, device, model_critic, model_actor, learning_rate_actor, learning_rate_critic, shared_observation_model=None):
+
+        print(shared_observation_model)
 
         tf.set_random_seed(1)
         with tf.device(device):

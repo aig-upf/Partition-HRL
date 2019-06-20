@@ -1,7 +1,7 @@
 from ao.options.options import OptionAbstract
 import numpy as np
 from agent.agent import AgentQMontezuma
-from agent.utils import ExperienceReplay
+from agent.utils import ExperienceReplay, Preprocessing
 from agent.models import A2CEager, CriticNetwork, ActorNetwork, SharedConvLayers
 import tensorflow as tf
 import os
@@ -11,6 +11,7 @@ class AgentA2C(AgentQMontezuma):
 
     def __init__(self, action_space, parameters):
         super().__init__(action_space, parameters)
+
         # this parameter is useful if you want to restart the episode after n actions (200 actions for instance)
         self.nb_actions = 0
 
@@ -35,42 +36,25 @@ class OptionA2C(OptionAbstract):
     def __init__(self, action_space, parameters, index):
         super().__init__(action_space, parameters, index)
         self.input_shape_nn = [None, self.parameters["NUMBER_ZONES_MONTEZUMA_Y"],
-                               self.parameters["NUMBER_ZONES_MONTEZUMA_X"], 1]
+                               self.parameters["NUMBER_ZONES_MONTEZUMA_X"], 3]
 
         self.state_size = self.input_shape_nn[1:]
         self.state_dimension = tuple(self.state_size)
 
         self.action_size = len(action_space)
-        self.observation_model = SharedConvLayers()
-        self.a2cDNN = A2CEager(self.input_shape_nn, 32, self.action_size, 'ReinforceNetwork', 'cpu:0', CriticNetwork,
-                               ActorNetwork, self.parameters["learning_rate_actor"],
-                               self.parameters["learning_rate_critic"], self.observation_model)
+        # shared variable
+        self.observation_model = self.parameters["SHARED_CONVOLUTION_LAYERS"]
+        self.main_model_nn = A2CEager(self.input_shape_nn, 32, self.action_size, 'A2Cnetwork', self.parameters["DEVICE"],
+                               CriticNetwork, ActorNetwork, self.parameters["LEARNING_RATE_ACTOR"], self.parameters["LEARNING_RATE_CRITIC"],
+                               self.observation_model)
 
-        self.device = self.parameters["DEVICE"]
         self.gamma = self.parameters["GAMMA"]
         self.learning_rate_actor = self.parameters["LEARNING_RATE_ACTOR"]
         self.learning_rate_critic = self.parameters["LEARNING_RATE_CRITIC"]
-        self.results_folder = self.parameters["RESULTS_FOLDER"]
-        self.file_name = self.parameters["FILE_NAME"]
         self.batch_size = self.parameters["BATCH_SIZE"]
         self.weight_ce_exploration = self.parameters["WEIGHT_CE_EXPLORATION"]
         self.buffer = ExperienceReplay(self.batch_size)
-        self.main_model_nn = SharedConvLayers()
-        self.analyze_memory = analyze_memory
-
-        os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
-        os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-
-        tf.enable_eager_execution()
-
-        # Just to be sure that we don't have some others graph loaded
-        tf.reset_default_graph()
-
-        self.sess = None
-        self.randomAgent = None
-
-        self.preprocess = Preprocessing(*self.state_dimension)
-        self.env = Environment(self.PROBLEM, self.preprocess)
+        self.state = None
 
     def _get_actor_critic_error(self, batch):
 
@@ -93,9 +77,10 @@ class OptionA2C(OptionAbstract):
             a = o[1]
             r = o[2]
             s_ = o[3]
+            done = o[4]
 
             a_index = self.action_space.index(a)
-            if s_ is None:
+            if done:
                 t = r
                 adv = t - p[i]
             else:
@@ -109,15 +94,15 @@ class OptionA2C(OptionAbstract):
 
         return x, adv_actor, a_one_hot, y_critic
 
-    def act(self, s):
+    def act(self, train_episode):
 
-        predict = self.main_model_nn.prediction_actor([s])[0]
+        print(self.state.shape)
+
+        predict = self.main_model_nn.prediction_actor(self.state)[0]
+
+        print("PREDICTION", predict)
 
         return np.random.choice(self.action_space, p=predict)
-
-    def observe(self, sample):  # in (s, a, r, s_) format
-
-        self.buffer.add(sample)
 
     def replay(self):
 
@@ -129,40 +114,39 @@ class OptionA2C(OptionAbstract):
             self.main_model_nn.train_actor(x, a_one_hot, adv_actor, self.weight_ce_exploration)
             self.main_model_nn.train_critic(x, y_critic)
 
-    def update_option(self, *args, **kwargs):
-        """
-        the function the updates the option's parameters.
-        In your case it could be self.observe but I'm not sure
-        :param args:
-        :param kwargs:
-        :return:
-        """
+    def update_option(self, o_r_d_i, intra_reward, action, end_option, train_episode):
+        r = self.compute_total_reward( o_r_d_i, action, intra_reward, end_option)
 
-    def reset(self, *args, **kwargs):
-        """
-        reset the parameter of the option after an episode.
-        For instance: the initial and terminal states. Can be any other attribute.
-        I expect that you *DO* *NOT* reset the values of the neural networks in this function.
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        pass
+        if train_episode:
+            self.buffer.add((self.state, action, r, o_r_d_i[0]["option"], o_r_d_i[2]))
 
-    def compute_total_reward(self, *args, **kwargs):
-        """
-        processes the information from the environment after a step. Returns a value to update the option
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        pass
+        self.state = np.array([o_r_d_i[0]["option"]])
+        self.replay()
+
+    def reset(self, initial_state, current_state, terminal_state):
+
+        super().reset_states(initial_state, terminal_state)
+        self.state = np.array([current_state])
+        self.buffer.reset_buffer()
 
     def compute_total_score(self, *args, **kwargs):
+        pass
+
+    def compute_total_reward(self, o_r_d_i, action, intra_reward, end_option):
         """
-        this function is a metric served in simulate mode. Not so important for the moment
-        :param args:
-        :param kwargs:
+        test ok
+        :param o_r_d_i:
+        :param action:
+        :param end_option:
         :return:
         """
-        pass
+        total_reward = o_r_d_i[1] + intra_reward
+        if end_option:
+            total_reward += (self.terminal_state == o_r_d_i[0]["agent"]) * self.parameters["reward_end_option"]
+            total_reward += (self.terminal_state != o_r_d_i[0]["agent"]) * self.parameters["penalty_end_option"]
+
+        total_reward += self.parameters["penalty_option_action"]
+        total_reward += o_r_d_i[2] * self.parameters["penalty_death_option"]
+
+        return total_reward
+
