@@ -6,13 +6,17 @@ data = {"agent_name": "AgentDQN",
         "probability_random_action_agent": 0.1,
         "probability_random_action_option": 0.1,
 
+        "epsilon": 0.1,  # exploration rate
+        "epsilon_min": 0.0001,
+        "epsilon_decay": 0.95,
+
         "penalty_death_option": -100,
         "penalty_option_action": -1,
         "penalty_option_idle": -0.5,
 
-        "learning_rate": 0.9,
+        "learning_rate": 0.002,
         "reward_end_option": 100,
-        "penalty_end_option": -100,
+        "penalty_end_option": -1000,
 
         "NUMBER_ZONES_MONTEZUMA_X": (2 ** 5) * 5,
         "NUMBER_ZONES_MONTEZUMA_Y": 2 * 3 * 5 * 7,

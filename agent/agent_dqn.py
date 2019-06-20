@@ -14,7 +14,6 @@ class AgentDQN(AgentQMontezuma):
         self.nb_actions = 0
 
     def reset(self, initial_state):
-        print(len(self))
         self.nb_actions = 0
         super().reset(initial_state)
 
@@ -25,13 +24,6 @@ class AgentDQN(AgentQMontezuma):
     def get_option(self) -> OptionAbstract:
         return OptionDQN(self.action_space, self.parameters, len(self))
 
-    def update_agent(self, o_r_d_i, option, train_episode=None):
-        super().update_agent(o_r_d_i, option, train_episode)
-
-        if type(option).__name__ != "OptionRandomExplore":
-            if option.terminal_state != o_r_d_i[0]["agent"]:
-                print("..")
-
 
 class OptionDQN(OptionAbstract):
 
@@ -40,11 +32,10 @@ class OptionDQN(OptionAbstract):
         self.state_size = 1  # gives the hashed image
         self.action_size = len(action_space)
         self.memory = deque(maxlen=2000)
-        self.gamma = 0.03    # discount rate
-        self.epsilon = 1.0  # exploration rate
-        self.epsilon_min = 0.01
-        self.epsilon_decay = 0.995
-        self.learning_rate = 0.001
+        self.epsilon = self.parameters["epsilon"]  # exploration rate
+        self.epsilon_min = self.parameters["epsilon_min"]
+        self.epsilon_decay = self.parameters["epsilon_decay"]
+        self.learning_rate = self.parameters["learning_rate"]
         self.model = self._build_model()
         self.state = None
 
@@ -57,12 +48,13 @@ class OptionDQN(OptionAbstract):
                       optimizer=Adam(lr=self.learning_rate))
         return model
 
-    def act(self):
-        self.epsilon = max(self.epsilon_min, self.epsilon * self.epsilon_decay)
-        # select random action with prob=epsilon else action=maxQ
+    def act(self, train_episode):
+        if train_episode:
+            self.epsilon = max(self.epsilon_min, self.epsilon * self.epsilon_decay)
+            # select random action with prob=epsilon else action=maxQ
 
-        if np.random.rand() <= self.epsilon:
-            return np.random.randint(self.action_size)
+            if np.random.rand() <= self.epsilon:
+                return np.random.randint(self.action_size)
 
         act_values = self.model.predict(self.state)  # [[action 1, action 2]]
         return np.argmax(act_values[0])
@@ -77,7 +69,7 @@ class OptionDQN(OptionAbstract):
             target = reward
             if not done:
                 Q_next = self.model.predict(next_state)[0]
-                target = (reward + self.gamma * np.amax(Q_next))
+                target = (reward + self.learning_rate * np.amax(Q_next))
 
             target_f = self.model.predict(state)
             target_f[0][action] = target
