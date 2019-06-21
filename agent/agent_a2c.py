@@ -6,6 +6,8 @@ from agent.models import A2CEager, CriticNetwork, ActorNetwork, SharedConvLayers
 import tensorflow as tf
 import os
 
+import matplotlib.pyplot as plt
+
 
 class AgentA2C(AgentQMontezuma):
 
@@ -35,8 +37,7 @@ class OptionA2C(OptionAbstract):
 
     def __init__(self, action_space, parameters, index):
         super().__init__(action_space, parameters, index)
-        self.input_shape_nn = [None, self.parameters["NUMBER_ZONES_MONTEZUMA_Y"],
-                               self.parameters["NUMBER_ZONES_MONTEZUMA_X"], 3]
+        self.input_shape_nn = [None, 105, 40, 3] #[None, self.parameters["NUMBER_ZONES_MONTEZUMA_Y"],self.parameters["NUMBER_ZONES_MONTEZUMA_X"], 3]
 
         self.state_size = self.input_shape_nn[1:]
         self.state_dimension = tuple(self.state_size)
@@ -96,11 +97,7 @@ class OptionA2C(OptionAbstract):
 
     def act(self, train_episode):
 
-        print(self.state.shape)
-
         predict = self.main_model_nn.prediction_actor(self.state)[0]
-
-        print("PREDICTION", predict)
 
         return np.random.choice(self.action_space, p=predict)
 
@@ -118,7 +115,7 @@ class OptionA2C(OptionAbstract):
         r = self.compute_total_reward( o_r_d_i, action, intra_reward, end_option)
 
         if train_episode:
-            self.buffer.add((self.state, action, r, o_r_d_i[0]["option"], o_r_d_i[2]))
+            self.buffer.add((self.state[0], action, r, o_r_d_i[0]["option"], o_r_d_i[2]))
 
         self.state = np.array([o_r_d_i[0]["option"]])
         self.replay()

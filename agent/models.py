@@ -63,15 +63,9 @@ class ActorNetwork(keras.Model):
 
     def call(self, x):
 
-        print(x.shape)
-        plt.imshow(x[0])
-        plt.show()
-
         if self.shared_observation_model is not None:
 
             x = self.shared_observation_model(x)
-
-        print(x.numpy().shape)
 
         x = self.dense1(x)
         x = self.out(x)
@@ -82,8 +76,6 @@ class A2CEager:
 
     def __init__(self, input_shape, h_size, n_actions, scope_var, device, model_critic, model_actor, learning_rate_actor, learning_rate_critic, shared_observation_model=None):
 
-        print(shared_observation_model)
-
         tf.set_random_seed(1)
         with tf.device(device):
             self.shared_observation_model = shared_observation_model
@@ -93,18 +85,6 @@ class A2CEager:
 
             self.model_critic._set_inputs(dummy_x)
             self.model_actor._set_inputs(dummy_x)
-
-            print("\n OBSERVATION ENCODING MODEL \n")
-
-            slim.model_analyzer.analyze_vars(self.shared_observation_model.trainable_variables, print_info=True)
-
-            print("\n ACTOR MODEL \n")
-
-            slim.model_analyzer.analyze_vars(self.model_actor.trainable_variables, print_info=True)
-
-            print("\n CRITIC MODEL \n")
-
-            slim.model_analyzer.analyze_vars(self.model_critic.trainable_variables, print_info=True)
 
             self.optimizer_critic = tf.train.AdamOptimizer(learning_rate=learning_rate_critic)
             self.optimizer_actor = tf.train.RMSPropOptimizer(learning_rate=learning_rate_actor)

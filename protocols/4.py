@@ -12,6 +12,8 @@ data = {
         "seeds": [0],
         "number_episodes": 10000,
 
+        "learning_rate": 0.001,
+
         # please check the values below
         "DEVICE": 'cpu:0',
         "GAMMA": 0.99,
