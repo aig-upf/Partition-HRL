@@ -47,9 +47,9 @@ class ObservationZoneWrapper(gym.ObservationWrapper):
 
             if gray_scale_render:
                 if agent_render:
-                    img = ObservationZoneWrapper.make_gray_scale(img, self.thresh_binary_agent)
+                    img = ObservationZoneWrapper.sample_colors(img, self.thresh_binary_agent)
                 else:
-                    img = ObservationZoneWrapper.make_gray_scale(img, self.thresh_binary_option)
+                    img = ObservationZoneWrapper.sample_colors(img, self.thresh_binary_option)
 
             img_resize = cv2.resize(img, size, interpolation=cv2.INTER_NEAREST)
 
@@ -81,22 +81,26 @@ class ObservationZoneWrapper(gym.ObservationWrapper):
                                                                    self.zone_size_option_x,
                                                                    self.zone_size_option_y)
 
-        img_option = ObservationZoneWrapper.make_gray_scale(img_option,
-                                                            self.thresh_binary_option)
+        img_option = ObservationZoneWrapper.gray_scale(img_option)
 
         img_agent = ObservationZoneWrapper.make_downsampled_image(img_agent,
                                                                   self.zone_size_agent_x,
                                                                   self.zone_size_agent_y)
 
-        img_agent = ObservationZoneWrapper.make_gray_scale(img_agent, self.thresh_binary_agent)
+        img_agent = ObservationZoneWrapper.sample_colors(img_agent, self.thresh_binary_agent)
 
-        img_option_tuple = tuple(tuple(tuple(color) for color in lig) for lig in img_option)
         img_agent_tuple = tuple(tuple(tuple(color) for color in lig) for lig in img_agent)
 
         return {"agent": hash(img_agent_tuple), "option": img_option}
 
     @staticmethod
-    def make_gray_scale(image, threshold):
+    def sample_colors(image, threshold):
         img = cv2.medianBlur(image, 1)
         _, img = cv2.threshold(img, threshold, 255, cv2.THRESH_BINARY)
         return img
+
+    @staticmethod
+    def gray_scale(image):
+        im = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        im = im.reshape((*im.shape, 1))  # reshape for the neural network for a2c
+        return im

@@ -1,12 +1,8 @@
 from ao.options.options import OptionAbstract
 import numpy as np
 from agent.agent import AgentQMontezuma
-from agent.utils import ExperienceReplay, Preprocessing
-from agent.models import A2CEager, CriticNetwork, ActorNetwork, SharedConvLayers
-import tensorflow as tf
-import os
-
-import matplotlib.pyplot as plt
+from agent.utils import ExperienceReplay
+from agent.models import A2CEager, CriticNetwork, ActorNetwork
 
 
 class AgentA2C(AgentQMontezuma):
@@ -37,7 +33,10 @@ class OptionA2C(OptionAbstract):
 
     def __init__(self, action_space, parameters, index):
         super().__init__(action_space, parameters, index)
-        self.input_shape_nn = [None, 105, 40, 3] #[None, self.parameters["NUMBER_ZONES_MONTEZUMA_Y"],self.parameters["NUMBER_ZONES_MONTEZUMA_X"], 3]
+
+        # not the right shape here
+        self.input_shape_nn = [None, self.parameters["NUMBER_ZONES_OPTION_Y"], self.parameters["NUMBER_ZONES_OPTION_X"],
+                               1]
 
         self.state_size = self.input_shape_nn[1:]
         self.state_dimension = tuple(self.state_size)
@@ -45,9 +44,10 @@ class OptionA2C(OptionAbstract):
         self.action_size = len(action_space)
         # shared variable
         self.observation_model = self.parameters["SHARED_CONVOLUTION_LAYERS"]
-        self.main_model_nn = A2CEager(self.input_shape_nn, 32, self.action_size, 'A2Cnetwork', self.parameters["DEVICE"],
-                               CriticNetwork, ActorNetwork, self.parameters["LEARNING_RATE_ACTOR"], self.parameters["LEARNING_RATE_CRITIC"],
-                               self.observation_model)
+        self.main_model_nn = A2CEager(self.input_shape_nn, 32, self.action_size, 'A2Cnetwork',
+                                      self.parameters["DEVICE"], CriticNetwork, ActorNetwork,
+                                      self.parameters["LEARNING_RATE_ACTOR"], self.parameters["LEARNING_RATE_CRITIC"],
+                                      self.observation_model)
 
         self.gamma = self.parameters["GAMMA"]
         self.learning_rate_actor = self.parameters["LEARNING_RATE_ACTOR"]
@@ -77,7 +77,7 @@ class OptionA2C(OptionAbstract):
             s = o[0]
             a = o[1]
             r = o[2]
-            s_ = o[3]
+            # s_ = o[3]
             done = o[4]
 
             a_index = self.action_space.index(a)
@@ -112,7 +112,7 @@ class OptionA2C(OptionAbstract):
             self.main_model_nn.train_critic(x, y_critic)
 
     def update_option(self, o_r_d_i, intra_reward, action, end_option, train_episode):
-        r = self.compute_total_reward( o_r_d_i, action, intra_reward, end_option)
+        r = self.compute_total_reward(o_r_d_i, action, intra_reward, end_option)
 
         if train_episode:
             self.buffer.add((self.state[0], action, r, o_r_d_i[0]["option"], o_r_d_i[2]))
@@ -134,6 +134,7 @@ class OptionA2C(OptionAbstract):
         test ok
         :param o_r_d_i:
         :param action:
+        :param intra_reward:
         :param end_option:
         :return:
         """
@@ -146,4 +147,3 @@ class OptionA2C(OptionAbstract):
         total_reward += o_r_d_i[2] * self.parameters["penalty_death_option"]
 
         return total_reward
-

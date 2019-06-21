@@ -18,6 +18,7 @@ Options:
 import gym
 from docopt import docopt
 import importlib.util
+# todo add the right wrapper following the protocol information (a2c wrapper or regular wrapper)
 from wrapper.obs import ObservationZoneWrapper
 import tensorflow as tf
 import os
