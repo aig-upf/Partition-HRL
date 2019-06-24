@@ -1,10 +1,7 @@
 import tensorflow as tf
 from tensorflow import keras
 import numpy as np
-from agent.losses import Losses
-import tensorflow.contrib.slim as slim
-
-import matplotlib.pyplot as plt
+from agent.a2c.losses import Losses
 
 
 class SharedConvLayers(keras.Model):

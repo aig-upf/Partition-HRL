@@ -16,6 +16,10 @@ data = {
         "reward_end_option": 100,
         "penalty_end_option": -1000,
 
+        # environment parameters
+        "env_name": "MontezumaRevenge-v0",
+        "obs_wrapper_name": "obs",
+
         "NUMBER_ZONES_MONTEZUMA_X": (2 ** 5) * 5,
         "NUMBER_ZONES_MONTEZUMA_Y": 2 * 3 * 5 * 7,
 

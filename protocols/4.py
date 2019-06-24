@@ -1,13 +1,12 @@
-from agent.models import SharedConvLayers
+from agent.a2c.models import SharedConvLayers
 
 shared_conv_layers = SharedConvLayers()
 
 
-
-
 data = {
-        "agent_file": "agent_a2c",
+        "agent_file": "a2c.agent_a2c",
         "agent_name": "AgentA2C",
+        "max_number_actions": 1000,
 
         "seeds": [0],
         "number_episodes": 10000,
@@ -30,7 +29,9 @@ data = {
         "reward_end_option": 1,
         "penalty_end_option": -1,
 
-        # Montezuma's parameters
+        # environment's parameters
+        "env_name": "MontezumaRevenge-v0",
+        "obs_wrapper_name": "obs_a2c",
         "NUMBER_ZONES_MONTEZUMA_X": (2 ** 5) * 5,
         "NUMBER_ZONES_MONTEZUMA_Y": 2 * 3 * 5 * 7,
         "NUMBER_ZONES_OPTION_X": (2 ** 3) * 5,

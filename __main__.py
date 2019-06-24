@@ -19,17 +19,20 @@ import gym
 from docopt import docopt
 import importlib.util
 # todo add the right wrapper following the protocol information (a2c wrapper or regular wrapper)
-from wrapper.obs import ObservationZoneWrapper
 import tensorflow as tf
 import os
+import time
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 tf.enable_eager_execution()
+# todo fix this The name tf.enable_eager_execution is deprecated. Please use tf.compat.v1.enable_eager_execution instead
+
 
 # Just to be sure that we don't have some others graph loaded
 tf.reset_default_graph()
+# todo fix this:  The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
 
 
 class Experiment(object):
@@ -47,16 +50,29 @@ class Experiment(object):
         """
         :return: the environment with parameters specified in the protocol
         """
-        env = gym.make("MontezumaRevenge-v0").env
-        try:
-            return ObservationZoneWrapper(env,
-                                          zone_size_option_x=self.parameters["ZONE_SIZE_OPTION_X"],
-                                          zone_size_option_y=self.parameters["ZONE_SIZE_OPTION_Y"],
-                                          zone_size_agent_x=self.parameters["ZONE_SIZE_AGENT_X"],
-                                          zone_size_agent_y=self.parameters["ZONE_SIZE_AGENT_Y"],
-                                          thresh_binary_option=self.parameters["THRESH_BINARY_OPTION"],
-                                          thresh_binary_agent=self.parameters["THRESH_BINARY_AGENT"])
-        except KeyError:
+        print("charging the environment: " + str(self.parameters["env_name"]))
+        time.sleep(0.5)
+        env = gym.make(self.parameters["env_name"]).env
+
+        if "obs_wrapper_name" in self.parameters.keys():
+            print("observation wrapper name is " + str(self.parameters["obs_wrapper_name"]))
+            time.sleep(1.5)
+
+            if self.parameters["obs_wrapper_name"] in ["obs", "obs_a2c"] :
+                from wrapper.obs_a2c import ObservationZoneWrapper
+                return ObservationZoneWrapper(env,
+                                              zone_size_option_x=self.parameters["ZONE_SIZE_OPTION_X"],
+                                              zone_size_option_y=self.parameters["ZONE_SIZE_OPTION_Y"],
+                                              zone_size_agent_x=self.parameters["ZONE_SIZE_AGENT_X"],
+                                              zone_size_agent_y=self.parameters["ZONE_SIZE_AGENT_Y"],
+                                              thresh_binary_option=self.parameters["THRESH_BINARY_OPTION"],
+                                              thresh_binary_agent=self.parameters["THRESH_BINARY_AGENT"])
+            else:
+                raise Exception("wrapper name unknown.")
+
+        else:
+            print("No observation wrapper.")
+            time.sleep(0.5)
             return env
 
     def get_agent(self):

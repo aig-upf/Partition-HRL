@@ -1,8 +1,8 @@
 from ao.options.options import OptionAbstract
 import numpy as np
 from agent.agent import AgentQMontezuma
-from agent.utils import ExperienceReplay
-from agent.models import A2CEager, CriticNetwork, ActorNetwork
+from agent.a2c.utils import ExperienceReplay
+from agent.a2c.models import A2CEager, CriticNetwork, ActorNetwork
 
 
 class AgentA2C(AgentQMontezuma):
@@ -20,7 +20,8 @@ class AgentA2C(AgentQMontezuma):
 
     def check_end_agent(self, o_r_d_i, current_option, train_episode):
         self.nb_actions += 1
-        return super().check_end_agent(o_r_d_i, current_option, train_episode) or bool(self.nb_actions > 200)
+        return super().check_end_agent(o_r_d_i, current_option, train_episode) or \
+               bool(self.nb_actions > self.parameters["max_number_actions"])
 
     def get_option(self) -> OptionAbstract:
         return OptionA2C(self.action_space, self.parameters, len(self), )

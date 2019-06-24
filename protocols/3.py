@@ -10,5 +10,7 @@ data = {"agent_name": "PlainDQNMontezuma",
         "epsilon": 1.0,
         "epsilon_min": 0.01,
         "epsilon_decay": 0.995,
-        "learning_rate": 0.001
+        "learning_rate": 0.001,
+
+        "env_name": "MontezumaRevenge-v0"
         }
