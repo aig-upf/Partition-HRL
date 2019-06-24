@@ -56,17 +56,19 @@ class Experiment(object):
 
         if "obs_wrapper_name" in self.parameters.keys():
             print("observation wrapper name is " + str(self.parameters["obs_wrapper_name"]))
-            time.sleep(1.5)
+            time.sleep(0.5)
 
             if self.parameters["obs_wrapper_name"] in ["obs", "obs_a2c"] :
-                from wrapper.obs_a2c import ObservationZoneWrapper
-                return ObservationZoneWrapper(env,
-                                              zone_size_option_x=self.parameters["ZONE_SIZE_OPTION_X"],
-                                              zone_size_option_y=self.parameters["ZONE_SIZE_OPTION_Y"],
-                                              zone_size_agent_x=self.parameters["ZONE_SIZE_AGENT_X"],
-                                              zone_size_agent_y=self.parameters["ZONE_SIZE_AGENT_Y"],
-                                              thresh_binary_option=self.parameters["THRESH_BINARY_OPTION"],
-                                              thresh_binary_agent=self.parameters["THRESH_BINARY_AGENT"])
+                obs = getattr(importlib.import_module("wrapper." + self.parameters["obs_wrapper_name"]),
+                              "ObservationZoneWrapper")
+
+                return obs(env,
+                           zone_size_option_x=self.parameters["ZONE_SIZE_OPTION_X"],
+                           zone_size_option_y=self.parameters["ZONE_SIZE_OPTION_Y"],
+                           zone_size_agent_x=self.parameters["ZONE_SIZE_AGENT_X"],
+                           zone_size_agent_y=self.parameters["ZONE_SIZE_AGENT_Y"],
+                           thresh_binary_option=self.parameters["THRESH_BINARY_OPTION"],
+                           thresh_binary_agent=self.parameters["THRESH_BINARY_AGENT"])
             else:
                 raise Exception("wrapper name unknown.")
 
@@ -79,6 +81,8 @@ class Experiment(object):
         """
         :return: the agent with parameters specified in the parameters
         """
+        print("agent : " + str(self.parameters["agent_name"]))
+        time.sleep(1.5)
         agent = getattr(importlib.import_module("agent." + self.parameters["agent_file"]), self.parameters["agent_name"])
         return agent(action_space=range(self.env.action_space.n), parameters=self.parameters)
 

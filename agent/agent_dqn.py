@@ -101,3 +101,7 @@ class OptionDQN(OptionAbstract):
         total_reward += o_r_d_i[2] * self.parameters["penalty_death_option"]
 
         return total_reward
+
+    def get_value(self, state):
+        act_values = self.model.predict(state)
+        return max(act_values)

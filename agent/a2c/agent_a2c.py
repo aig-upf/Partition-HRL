@@ -148,3 +148,14 @@ class OptionA2C(OptionAbstract):
         total_reward += o_r_d_i[2] * self.parameters["penalty_death_option"]
 
         return total_reward
+
+    def get_value(self, state):
+        """
+        todo
+        returns the value of this state.
+        Example with Q-Learning: return max_{a in action_space} Q(state, a).
+        My problem is that self.main_model_nn.prediction_actor(self.state)[0] only return a probability distribution.
+        :param state:
+        :return:
+        """
+        raise NotImplementedError()
