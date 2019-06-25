@@ -22,7 +22,7 @@ class AgentQMontezuma(AgentOptionMontezuma):
 
     def reset(self, initial_state):
         if self.get_current_state() != initial_state:
-            super().reset(initial_state)
+            super().reset(initial_state)  # the QGraph policy cannot reset when current_state == initial_state
 
     def check_end_agent(self, o_r_d_i, current_option, train_episode):
         return o_r_d_i[-1]['ale.lives'] != 6
