@@ -14,6 +14,7 @@ tf.reset_default_graph()
 # todo fix this:  The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
 
 shared_conv_layers = SharedConvLayers()
+critic_network = CriticNetwork(32, shared_conv_layers)
 
 data = {
         "agent_file": "a2c.agent_a2c",
@@ -33,7 +34,7 @@ data = {
         "BATCH_SIZE": 32,
         "WEIGHT_CE_EXPLORATION": 0.01,
         "SHARED_CONVOLUTION_LAYERS": shared_conv_layers,
-        "CRITIC_NETWORK": CriticNetwork,
+        "CRITIC_NETWORK": critic_network,
         "ACTOR_NETWORK": ActorNetwork,
 
         # do we need this ?

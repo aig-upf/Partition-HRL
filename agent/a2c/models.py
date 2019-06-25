@@ -2,6 +2,7 @@ import tensorflow as tf
 from tensorflow import keras
 import numpy as np
 from agent.a2c.losses import Losses
+import inspect
 
 
 class SharedConvLayers(keras.Model):
@@ -16,7 +17,6 @@ class SharedConvLayers(keras.Model):
     def call(self, x):
         x = self.conv1(x)
         x = self.conv2(x)
-        x = self.conv3(x)
         x = self.flatten(x)
 
         return x
@@ -75,13 +75,25 @@ class A2CEager:
 
         tf.set_random_seed(1)
         with tf.device(device):
-            self.shared_observation_model = shared_observation_model
-            self.model_critic = model_critic(h_size, self.shared_observation_model)
-            self.model_actor = model_actor(h_size, n_actions, self.shared_observation_model)
+
             dummy_x = tf.zeros([1] + input_shape[1::])
 
-            self.model_critic._set_inputs(dummy_x)
-            self.model_actor._set_inputs(dummy_x)
+            if inspect.isclass(shared_observation_model):
+                self.shared_observation_model = SharedConvLayers()
+            else:
+                self.shared_observation_model = shared_observation_model
+
+            if inspect.isclass(model_critic):
+                self.model_critic = model_critic(h_size, self.shared_observation_model)
+                self.model_critic._set_inputs(dummy_x)
+            else:
+                self.model_critic = model_critic
+
+            if inspect.isclass(model_actor):
+                self.model_actor = model_actor(h_size, n_actions, self.shared_observation_model)
+                self.model_actor._set_inputs(dummy_x)
+            else:
+                self.model_actor = model_actor
 
             self.optimizer_critic = tf.train.AdamOptimizer(learning_rate=learning_rate_critic)
             self.optimizer_actor = tf.train.RMSPropOptimizer(learning_rate=learning_rate_actor)

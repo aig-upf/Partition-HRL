@@ -2,8 +2,7 @@ from ao.options.options import OptionAbstract
 import numpy as np
 from agent.agent import AgentQMontezuma
 from agent.a2c.utils import ExperienceReplay
-from agent.a2c.models import A2CEager, CriticNetwork, ActorNetwork
-from policy.policy_tree import QTree
+from agent.a2c.models import A2CEager
 
 
 class AgentA2C(AgentQMontezuma):
@@ -21,17 +20,14 @@ class AgentA2C(AgentQMontezuma):
 
     def check_end_agent(self, o_r_d_i, current_option, train_episode):
         self.nb_actions += 1
-        # bool(self.nb_actions > self.parameters["max_number_actions"])
-        return super().check_end_agent(o_r_d_i, current_option, train_episode)
+        return super().check_end_agent(o_r_d_i, current_option, train_episode) or \
+               bool(self.nb_actions > self.parameters["max_number_actions"])
 
     def get_option(self) -> OptionAbstract:
         return OptionA2C(self.action_space, self.parameters, len(self), )
 
     def update_agent(self, o_r_d_i, option, train_episode=None):
         super().update_agent(o_r_d_i, option, train_episode)
-
-    def get_policy(self):
-        return QTree(self.parameters)
 
 
 class OptionA2C(OptionAbstract):
@@ -48,11 +44,16 @@ class OptionA2C(OptionAbstract):
 
         self.action_size = len(action_space)
         # shared variable
-        self.observation_model = self.parameters["SHARED_CONVOLUTION_LAYERS"]
-        self.main_model_nn = A2CEager(self.input_shape_nn, 32, self.action_size, 'A2Cnetwork',
-                                      self.parameters["DEVICE"], CriticNetwork, ActorNetwork,
-                                      self.parameters["LEARNING_RATE_ACTOR"], self.parameters["LEARNING_RATE_CRITIC"],
-                                      self.observation_model)
+        self.main_model_nn = A2CEager(self.input_shape_nn,
+                                      32,
+                                      self.action_size,
+                                      'A2Cnetwork',
+                                      self.parameters["DEVICE"],
+                                      self.parameters["CRITIC_NETWORK"],
+                                      self.parameters["ACTOR_NETWORK"],
+                                      self.parameters["LEARNING_RATE_ACTOR"],
+                                      self.parameters["LEARNING_RATE_CRITIC"],
+                                      self.parameters["SHARED_CONVOLUTION_LAYERS"])
 
         self.gamma = self.parameters["GAMMA"]
         self.learning_rate_actor = self.parameters["LEARNING_RATE_ACTOR"]

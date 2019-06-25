@@ -19,21 +19,7 @@ import gym
 from docopt import docopt
 import importlib.util
 # todo add the right wrapper following the protocol information (a2c wrapper or regular wrapper)
-import tensorflow as tf
-import os
 import time
-
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-
-tf.enable_eager_execution()
-# todo fix this The name tf.enable_eager_execution is deprecated. Please use tf.compat.v1.enable_eager_execution instead
-
-
-# Just to be sure that we don't have some others graph loaded
-tf.reset_default_graph()
-# todo fix this:  The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
-
 
 class Experiment(object):
     """
