@@ -76,9 +76,8 @@ class ObservationZoneWrapper(gym.ObservationWrapper):
         img_agent = ObservationZoneWrapper.make_downsampled_image(img_agent, self.zone_size_agent_x,
                                                                   self.zone_size_agent_y)
         img_agent = ObservationZoneWrapper.sample_colors(img_agent, self.thresh_binary_agent)
-        img_agent_tuple = tuple(tuple(tuple(color) for color in lig) for lig in img_agent)
 
-        return {"agent": hash(img_agent_tuple), "option": self.images_stack}
+        return {"agent": img_agent, "option": self.images_stack}
 
     @staticmethod
     def sample_colors(image, threshold):

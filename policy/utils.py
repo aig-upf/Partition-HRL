@@ -4,7 +4,7 @@ todo replace maybe by np.random.choice(list, output_lenght, probability distribu
 import numpy as np
 
 
-def sample_cdf(cum_probs):  # cumulative dictribution function
+def sample_cdf(cum_probs):  # cumulative distribution function
     rand = np.random.rand()
     return sum(cum_probs < rand)
 

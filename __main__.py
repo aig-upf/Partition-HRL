@@ -44,14 +44,10 @@ class Experiment(object):
         if "obs_wrapper_name" in self.parameters.keys():
             print("observation wrapper name is " + str(self.parameters["obs_wrapper_name"]))
             time.sleep(0.5)
+            obs = getattr(importlib.import_module("wrapper." + self.parameters["obs_wrapper_name"]),
+                          "ObservationZoneWrapper")
 
-            if self.parameters["obs_wrapper_name"] in ["obs", "obs_a2c"] :
-                obs = getattr(importlib.import_module("wrapper." + self.parameters["obs_wrapper_name"]),
-                              "ObservationZoneWrapper")
-
-                return obs(env, self.parameters)
-            else:
-                raise Exception("wrapper name unknown.")
+            return obs(env, self.parameters)
 
         else:
             print("No observation wrapper.")

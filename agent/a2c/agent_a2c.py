@@ -1,11 +1,12 @@
 from ao.options.options import OptionAbstract
 import numpy as np
-from agent.agent import AgentQMontezuma
+from agent.agent import AgentOptionMontezuma
 from agent.a2c.utils import ExperienceReplay
 from agent.a2c.models import A2CEager
+from policy.policy_tree import QTree
 
 
-class AgentA2C(AgentQMontezuma):
+class AgentA2C(AgentOptionMontezuma):
 
     def __init__(self, action_space, parameters):
         super().__init__(action_space, parameters)
@@ -20,14 +21,29 @@ class AgentA2C(AgentQMontezuma):
 
     def check_end_agent(self, o_r_d_i, current_option, train_episode):
         self.nb_actions += 1
-        return super().check_end_agent(o_r_d_i, current_option, train_episode) or \
-               bool(self.nb_actions > self.parameters["max_number_actions"])
+        return o_r_d_i[-1]['ale.lives'] != 6 or bool(self.nb_actions > self.parameters["max_number_actions"])
 
     def get_option(self) -> OptionAbstract:
         return OptionA2C(self.action_space, self.parameters, len(self), )
 
     def update_agent(self, o_r_d_i, option, train_episode=None):
         super().update_agent(o_r_d_i, option, train_episode)
+
+    def get_policy(self):
+        return QTree(self.parameters)
+
+    def compute_total_reward(self, o_r_d_i, option_index, train_episode):
+        """
+        todo
+        :param o_r_d_i:
+        :param option_index:
+        :param train_episode:
+        :return:
+        """
+        reward = self.option_list[option_index].score
+        if reward > 0:
+            print("reward !")
+        return reward
 
 
 class OptionA2C(OptionAbstract):
@@ -157,5 +173,17 @@ class OptionA2C(OptionAbstract):
     def get_value(self, state):
 
         value = self.main_model_nn.prediction_critic([state])
-
         return value
+
+    def check_end_option(self, new_state):
+        """
+        Checks if the option has terminated or not.
+        The new_state must be *of the same form* as the initial_state (transformed or not).
+        :param new_state:
+        :return: True if the new_state is different from the initial state
+        """
+        end_option = not np.array_equal(new_state, self.initial_state)
+        if end_option:
+            self.activated = False
+
+        return end_option
