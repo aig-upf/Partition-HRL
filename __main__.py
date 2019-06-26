@@ -21,6 +21,7 @@ import importlib.util
 # todo add the right wrapper following the protocol information (a2c wrapper or regular wrapper)
 import time
 
+
 class Experiment(object):
     """
     This class makes an experiment and an agent from a protocol
@@ -48,13 +49,7 @@ class Experiment(object):
                 obs = getattr(importlib.import_module("wrapper." + self.parameters["obs_wrapper_name"]),
                               "ObservationZoneWrapper")
 
-                return obs(env,
-                           zone_size_option_x=self.parameters["ZONE_SIZE_OPTION_X"],
-                           zone_size_option_y=self.parameters["ZONE_SIZE_OPTION_Y"],
-                           zone_size_agent_x=self.parameters["ZONE_SIZE_AGENT_X"],
-                           zone_size_agent_y=self.parameters["ZONE_SIZE_AGENT_Y"],
-                           thresh_binary_option=self.parameters["THRESH_BINARY_OPTION"],
-                           thresh_binary_agent=self.parameters["THRESH_BINARY_AGENT"])
+                return obs(env, self.parameters)
             else:
                 raise Exception("wrapper name unknown.")
 

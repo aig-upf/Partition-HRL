@@ -45,7 +45,8 @@ data = {
 
         # environment's parameters
         "env_name": "MontezumaRevenge-v0",
-        "obs_wrapper_name": "obs_a2c",
+        "obs_wrapper_name": "obs_a2c_4_frames",
+        "stack_images_length": 4,
         "NUMBER_ZONES_MONTEZUMA_X": (2 ** 5) * 5,
         "NUMBER_ZONES_MONTEZUMA_Y": 2 * 3 * 5 * 7,
         "NUMBER_ZONES_OPTION_X": (2 ** 3) * 5,
