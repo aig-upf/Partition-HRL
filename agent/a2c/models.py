@@ -17,8 +17,9 @@ class SharedConvLayers(keras.Model):
     def call(self, x):
         x = self.conv1(x)
         x = self.conv2(x)
+        x = self.conv3(x)
         x = self.flatten(x)
-
+        x = self.dense(x)
         return x
 
 
@@ -85,13 +86,11 @@ class A2CEager:
 
             if inspect.isclass(model_critic):
                 self.model_critic = model_critic(h_size, self.shared_observation_model)
-                self.model_critic._set_inputs(dummy_x)
             else:
                 self.model_critic = model_critic
 
             if inspect.isclass(model_actor):
                 self.model_actor = model_actor(h_size, n_actions, self.shared_observation_model)
-                self.model_actor._set_inputs(dummy_x)
             else:
                 self.model_actor = model_actor
 
@@ -102,6 +101,7 @@ class A2CEager:
     def prediction(self, s):
 
         s = np.array(s, dtype=np.float32)
+        s = tf.convert_to_tensor(s)
 
         a = self.model_actor(s)
 
@@ -110,12 +110,14 @@ class A2CEager:
     def prediction_actor(self, s):
 
         s = np.array(s, dtype=np.float32)
+        s = tf.convert_to_tensor(s)
 
         return self.model_actor(s).numpy()
 
     def prediction_critic(self, s):
 
         s = np.array(s, dtype=np.float32)
+        s = tf.convert_to_tensor(s)
 
         return self.model_critic(s).numpy()
 
@@ -142,6 +144,7 @@ class A2CEager:
     def train_critic(self, s, y, max_grad_norm=1.):
 
         s = np.array(s, dtype=np.float32)
+        s = tf.convert_to_tensor(s)
 
         loss_value, grads = self.grad_critic(self.model_critic, s, y)
 
@@ -155,6 +158,7 @@ class A2CEager:
 
     def train_actor(self, s, one_hot_a, advantage, weight_ce=0, max_grad_norm=0.5):
         s = np.array(s, dtype=np.float32)
+        s = tf.convert_to_tensor(s)
 
         loss_value, grads = self.grad_actor(self.model_actor, s, one_hot_a, advantage, weight_ce)
 

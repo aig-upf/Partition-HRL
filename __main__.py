@@ -45,7 +45,7 @@ class Experiment(object):
             print("observation wrapper name is " + str(self.parameters["obs_wrapper_name"]))
             time.sleep(0.5)
 
-            if self.parameters["obs_wrapper_name"] in ["obs", "obs_a2c"] :
+            if self.parameters["obs_wrapper_name"] in ["obs", "obs_a2c", "obs_a2c_stacked_frames"] :
                 obs = getattr(importlib.import_module("wrapper." + self.parameters["obs_wrapper_name"]),
                               "ObservationZoneWrapper")
 
