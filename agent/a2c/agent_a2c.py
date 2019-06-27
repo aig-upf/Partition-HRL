@@ -21,7 +21,8 @@ class AgentA2C(AgentOptionMontezuma):
 
     def check_end_agent(self, o_r_d_i, current_option, train_episode):
         self.nb_actions += 1
-        return o_r_d_i[-1]['ale.lives'] != 6 or bool(self.nb_actions > self.parameters["max_number_actions"])
+        return o_r_d_i[-1]['ale.lives'] != 6 or bool(self.nb_actions > self.parameters["max_number_actions"]) or \
+            self.policy.end_novelty
 
     def get_option(self) -> OptionAbstract:
         return OptionA2C(self.action_space, self.parameters, len(self), )

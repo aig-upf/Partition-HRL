@@ -10,6 +10,7 @@ class QTree(PolicyAbstractAgent):
     def __init__(self, parameters):
         self.parameters = parameters
         self.tree = None
+        self.end_novelty = False
 
     def __len__(self):
         return len(self.tree)
@@ -57,28 +58,32 @@ class QTree(PolicyAbstractAgent):
 
         and update the current_node position of variable self.tree
         """
-        if action is None:  # we update from an exploration
-            found = self.tree.move_if_node_with_state(new_state)
-            if not found:
-                self.tree.add_node(Node(new_state))
+        if train_episode is None:
+            raise NotImplementedError()
 
-        else:  # we update from a regular option
-
-            # move to node which value attribute is Q_t(current_position, action)
-            self.tree.move_to_child_node_from_index(action)
-            node_activated = self.tree.current_node
-
-            # if the action performed well, take the best value
-            if node_activated.data == new_state:
-                best_value = max(node_activated.get_children_values())
-
-                node_activated.value *= (1 - self.parameters["learning_rate"])
-                node_activated.value += self.parameters["learning_rate"] * (reward + best_value)
-
-            else:  # set best value to zero, add the node if the new_state is new and update tree.current_state
+        else:
+            if action is None:  # we update from an exploration
                 found = self.tree.move_if_node_with_state(new_state)
                 if not found:
-                    self.tree.add_node(Node(new_state))
+                    self.end_novelty = self.tree.add_node(new_state)
+
+            else:  # we update from a regular option
+
+                # move to node which value attribute is Q_t(current_position, action)
+                self.tree.move_to_child_node_from_index(action)
+                node_activated = self.tree.current_node
+
+                # if the action performed well, take the best value
+                if node_activated.data == new_state:
+                    best_value = max(node_activated.get_children_values())
+
+                    node_activated.value *= (1 - self.parameters["learning_rate"])
+                    node_activated.value += self.parameters["learning_rate"] * (reward + best_value)
+
+                else:  # set best value to zero, add the node if the new_state is new and update tree.current_state
+                    found = self.tree.move_if_node_with_state(new_state)
+                    if not found:
+                        self.tree.add_node(Node(new_state))
 
     def get_max_number_successors(self):
         return self.tree.get_max_width()
