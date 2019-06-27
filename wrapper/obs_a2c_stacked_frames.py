@@ -2,7 +2,7 @@ import gym
 import cv2
 from gym.envs.classic_control import rendering
 from collections import deque
-
+import numpy as np
 
 class ObservationZoneWrapper(gym.ObservationWrapper):
     def __init__(self, env, parameters):
@@ -71,6 +71,12 @@ class ObservationZoneWrapper(gym.ObservationWrapper):
                                                                    self.zone_size_option_y)
         img_option = ObservationZoneWrapper.gray_scale(img_option)
         self.images_stack.append(img_option)
+
+        img_option_stacked = np.zeros((self.images_stack[0].shape[0], self.images_stack[0].shape[1], self.images_stack[0].shape[2]*4),
+                                      dtype=np.float32)
+
+        for i in range(0, self.images_stack.__len__()):
+            img_option_stacked[..., i-1:i] = self.images_stack[i]
 
         # agent observation
         img_agent = ObservationZoneWrapper.make_downsampled_image(img_agent, self.zone_size_agent_x,

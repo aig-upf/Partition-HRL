@@ -14,7 +14,8 @@ tf.reset_default_graph()
 # todo fix this:  The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
 
 shared_conv_layers = SharedConvLayers()
-critic_network = CriticNetwork(32, shared_conv_layers)
+critic_network = CriticNetwork(64, shared_conv_layers)
+actor_network = ActorNetwork(64, 18, shared_conv_layers)
 
 data = {
         "agent_file": "a2c.agent_a2c",
@@ -31,7 +32,7 @@ data = {
         "GAMMA": 0.99,
         "LEARNING_RATE_ACTOR": 0.00001,
         "LEARNING_RATE_CRITIC": 0.0001,
-        "BATCH_SIZE": 32,
+        "BATCH_SIZE": 6,
         "WEIGHT_CE_EXPLORATION": 0.01,
         "SHARED_CONVOLUTION_LAYERS": shared_conv_layers,
         "CRITIC_NETWORK": critic_network,
@@ -46,7 +47,8 @@ data = {
 
         # environment's parameters
         "env_name": "MontezumaRevenge-v0",
-        "obs_wrapper_name": "obs_a2c",
+        "obs_wrapper_name": "obs_a2c_stacked_frames",
+        "stack_images_length": 4,
         "NUMBER_ZONES_MONTEZUMA_X": (2 ** 5) * 5,
         "NUMBER_ZONES_MONTEZUMA_Y": 2 * 3 * 5 * 7,
         "NUMBER_ZONES_OPTION_X": (2 ** 3) * 5,

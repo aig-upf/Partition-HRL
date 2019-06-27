@@ -53,8 +53,9 @@ class OptionA2C(OptionAbstract):
         super().__init__(action_space, parameters, index)
 
         # not the right shape here
-        self.input_shape_nn = [None, self.parameters["NUMBER_ZONES_OPTION_Y"], self.parameters["NUMBER_ZONES_OPTION_X"],
-                               1]
+        self.input_shape_nn = [None, self.parameters["NUMBER_ZONES_OPTION_Y"],
+                               self.parameters["NUMBER_ZONES_OPTION_X"],
+                               self.parameters["stack_images_length"]]
 
         self.state_size = self.input_shape_nn[1:]
         self.state_dimension = tuple(self.state_size)
@@ -82,41 +83,44 @@ class OptionA2C(OptionAbstract):
 
     def _get_actor_critic_error(self, batch):
 
-        no_state = np.zeros(self.state_dimension)
-
         states_t = np.array([o[1][0] for o in batch])
-        states_t1 = np.array([(no_state if o[1][3] is None else o[1][3]) for o in batch])
-
         p = self.main_model_nn.prediction_critic(states_t)
-        p_ = self.main_model_nn.prediction_critic(states_t1)
-
-        x = np.zeros((len(batch),) + self.state_dimension)
-        adv_actor = np.zeros(len(batch))
         a_one_hot = np.zeros((len(batch), len(self.action_space)))
-        y_critic = np.zeros((len(batch), 1))
+        dones = np.zeros((len(batch)))
+        rewards = np.zeros((len(batch)))
 
         for i in range(len(batch)):
             o = batch[i][1]
-            s = o[0]
             a = o[1]
             r = o[2]
-            # s_ = o[3]
-            done = o[4]
+            s_ = o[3]
 
             a_index = self.action_space.index(a)
-            if done:
-                t = r
-                adv = t - p[i]
-            else:
-                t = r + self.gamma * p_[i]
-                adv = t - p[i]
 
-            x[i] = s
-            y_critic[i] = t
+            if s_ is None:
+                dones[i] = 1
+                p_ = [0]
+            elif i == len(batch)-1:
+                p_ = self.main_model_nn.prediction_critic([s_])[0]
+
+            rewards[i] = r
             a_one_hot[i][a_index] = 1
-            adv_actor[i] = adv
 
-        return x, adv_actor, a_one_hot, y_critic
+        y_critic, adv_actor = self._returns_advantages(rewards, dones, p, p_)
+        y_critic = np.expand_dims(y_critic, axis=-1)
+
+        return states_t, adv_actor, a_one_hot, y_critic
+
+    def _returns_advantages(self, rewards, dones, values, next_value):
+        # next_value is the bootstrap value estimate of a future state (the critic)
+        returns = np.append(np.zeros_like(rewards), next_value, axis=-1)
+        # returns are calculated as discounted sum of future rewards
+        for t in reversed(range(rewards.shape[0])):
+            returns[t] = rewards[t] + self.gamma * returns[t + 1] * (1 - dones[t])
+        returns = returns[:-1]
+        # advantages are returns - baseline, value estimates in our case
+        advantages = returns - values
+        return returns, advantages
 
     def act(self, train_episode):
 
@@ -134,10 +138,13 @@ class OptionA2C(OptionAbstract):
             self.main_model_nn.train_actor(x, a_one_hot, adv_actor, self.weight_ce_exploration)
             self.main_model_nn.train_critic(x, y_critic)
 
+            self.buffer.reset_buffer()
+
     def update_option(self, o_r_d_i, intra_reward, action, end_option, train_episode):
         r = self.compute_total_reward(o_r_d_i, action, intra_reward, end_option)
 
         if train_episode:
+
             self.buffer.add((self.state[0], action, r, o_r_d_i[0]["option"], o_r_d_i[2]))
 
         self.state = np.array([o_r_d_i[0]["option"]])
