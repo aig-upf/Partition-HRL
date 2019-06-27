@@ -4,6 +4,7 @@ data = {"agent_name": "AgentDQN",
         "seeds": [0],
         "number_episodes": 3000,
         "probability_random_action_agent": 0.1,
+        "probability_random_action_agent_decay": 1/2000,
         "probability_random_action_option": 0.1,
 
         "epsilon": 0.1,  # exploration rate

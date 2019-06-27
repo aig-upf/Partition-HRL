@@ -1,5 +1,6 @@
 from ao.policies.agent.agent_policy import PolicyAbstractAgent
 from ao.structures.tree import Tree, Node
+from ao.utils.miscellaneous import obs_equal
 import numpy as np
 
 
@@ -19,23 +20,25 @@ class QTree(PolicyAbstractAgent):
         return str(self.tree)
 
     def reset(self, initial_state):
+        self.end_novelty = False
         if self.tree is None:
             self.tree = Tree(initial_state)
 
-        if not np.array_equal(self.tree.root.data, initial_state):
+        if not obs_equal(self.tree.root.data, initial_state):
             raise ValueError("The initial observation is not always the same ! " +
                              "Maybe a Graph structure could be more adapted")
         else:
             self.tree.reset()
 
-    def find_best_action(self, state, train_episode=None):
+    def find_best_action(self, train_episode=None):
         """
         todo take into account train_episode
         returns the best value and the best action. If best action is None, then explore.
         :return: best_option_index, terminal_state
         """
         values = self.tree.get_children_values()
-        if not values:
+        if train_episode and (not values or np.random.rand() < self.parameters["probability_random_action_agent"] *
+                              np.exp(-train_episode * self.parameters["probability_random_action_agent_decay"])):
             return None, None
 
         if all(val == values[0] for val in values):  # all the values are the same
@@ -74,8 +77,12 @@ class QTree(PolicyAbstractAgent):
                 node_activated = self.tree.current_node
 
                 # if the action performed well, take the best value
-                if node_activated.data == new_state:
-                    best_value = max(node_activated.get_children_values())
+                if obs_equal(node_activated.data, new_state):
+
+                    if node_activated.get_children_values():
+                        best_value = max(node_activated.get_children_values())
+                    else:
+                        best_value = 0
 
                     node_activated.value *= (1 - self.parameters["learning_rate"])
                     node_activated.value += self.parameters["learning_rate"] * (reward + best_value)
@@ -83,7 +90,7 @@ class QTree(PolicyAbstractAgent):
                 else:  # set best value to zero, add the node if the new_state is new and update tree.current_state
                     found = self.tree.move_if_node_with_state(new_state)
                     if not found:
-                        self.tree.add_node(Node(new_state))
+                        self.tree.add_node(new_state)
 
     def get_max_number_successors(self):
         return self.tree.get_max_width()

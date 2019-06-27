@@ -5,6 +5,7 @@ data = {
         "seeds": [0],
         "number_episodes": 10000,
         "probability_random_action_agent": 0.1,
+        "probability_random_action_agent_decay": 1/2000,
         "probability_random_action_option": 0.1,
         "random_decay": 0.01,
 

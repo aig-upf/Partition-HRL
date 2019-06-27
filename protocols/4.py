@@ -38,7 +38,8 @@ data = {
 
         # do we need this ?
         "probability_random_action_agent": 0.1,
-        "penalty_death_option": -1,
+        "probability_random_action_agent_decay": 1/2000,
+        "penalty_death_option": -5,
         "penalty_option_action": -0.1,
         "reward_end_option": 1,
         "penalty_end_option": -1,

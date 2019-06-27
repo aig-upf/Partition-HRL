@@ -1,9 +1,10 @@
 from ao.options.options import OptionAbstract
-import numpy as np
+from ao.utils.miscellaneous import obs_equal
 from agent.agent import AgentOptionMontezuma
 from agent.a2c.utils import ExperienceReplay
 from agent.a2c.models import A2CEager
 from policy.policy_tree import QTree
+import numpy as np
 
 
 class AgentA2C(AgentOptionMontezuma):
@@ -45,6 +46,34 @@ class AgentA2C(AgentOptionMontezuma):
         if reward > 0:
             print("reward !")
         return reward
+
+    def get_intra_reward(self, end_option, next_state, current_option, train_episode):
+        """
+        returns a reward based on the maximum value of the next_state over all options
+        (maybe one should select some options instead of using all options).
+        :param end_option: if the option ended or not
+        :param next_state: the next lower level state
+        :param current_option: the current option.
+        :param train_episode:
+        :return: an integer corresponding to the value of the last action:
+        - if end_option is False : 0
+        - if end_option is True : maximum value over all options except the current option of this state
+        """
+        if not (end_option and train_episode and issubclass(type(current_option), OptionAbstract)):
+            return 0
+
+        else:
+            intra_rewards = []
+            for option in self.option_list:
+
+                if option.index < len(self.policy.tree.current_node.children[current_option.index].children):
+                    intra_rewards.append(option.get_value(next_state))
+
+            if intra_rewards:
+                print("intra rewards = " + str(max(intra_rewards)))
+                return max(intra_rewards)
+            else:
+                return 0
 
 
 class OptionA2C(OptionAbstract):
@@ -170,8 +199,9 @@ class OptionA2C(OptionAbstract):
         """
         total_reward = o_r_d_i[1] + intra_reward
         if end_option:
-            total_reward += (self.terminal_state == o_r_d_i[0]["agent"]) * self.parameters["reward_end_option"]
-            total_reward += (self.terminal_state != o_r_d_i[0]["agent"]) * self.parameters["penalty_end_option"]
+            total_reward += obs_equal(self.terminal_state, o_r_d_i[0]["agent"]) * self.parameters["reward_end_option"]
+            total_reward += not obs_equal(self.terminal_state, o_r_d_i[0]["agent"]) * \
+                                self.parameters["penalty_end_option"]
 
         total_reward += self.parameters["penalty_option_action"]
         total_reward += o_r_d_i[2] * self.parameters["penalty_death_option"]
@@ -181,7 +211,7 @@ class OptionA2C(OptionAbstract):
     def get_value(self, state):
 
         value = self.main_model_nn.prediction_critic([state])
-        return value
+        return value[0][0]
 
     def check_end_option(self, new_state):
         """
@@ -190,7 +220,7 @@ class OptionA2C(OptionAbstract):
         :param new_state:
         :return: True if the new_state is different from the initial state
         """
-        end_option = not np.array_equal(new_state, self.initial_state)
+        end_option = not obs_equal(new_state, self.initial_state)
         if end_option:
             self.activated = False
 
