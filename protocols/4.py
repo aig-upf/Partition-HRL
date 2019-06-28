@@ -22,6 +22,7 @@ data = {
 
         "seeds": [3],
         "number_episodes": 100000,
+        "show_environment": False,
 
         "learning_rate": 0.001,
 
