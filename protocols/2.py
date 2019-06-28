@@ -1,5 +1,6 @@
 data = {"agent_name": "AgentDQN",
         "agent_file": "agent_dqn",
+        "display_environment": False,
 
         "seeds": [0],
         "number_episodes": 3000,

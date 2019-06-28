@@ -1,6 +1,5 @@
 import gym
 import cv2
-from gym.envs.classic_control import rendering
 from collections import deque
 import numpy as np
 
@@ -17,37 +16,6 @@ class ObservationZoneWrapper(gym.ObservationWrapper):
         self.thresh_binary_option = self.parameters["THRESH_BINARY_OPTION"]
         self.thresh_binary_agent = self.parameters["THRESH_BINARY_AGENT"]
         self.images_stack = deque([], maxlen=self.parameters["stack_images_length"])
-
-    def render(self, size=(512, 512), agent_render=True, close=False, blurred_render=False, gray_scale_render=False):
-
-        if hasattr(self.env.__class__, 'render_scaled'):  # we call render_scaled function from gridenvs
-            return self.env.render_scaled(size, "human", close)
-         
-        else:  # we scale the image from other environment (like Atari)
-            env_unwrapped = self.env.unwrapped
-            img = env_unwrapped.ale.getScreenRGB2()
-
-            if blurred_render:
-                if agent_render:
-                    img = ObservationZoneWrapper.make_downsampled_image(img, self.zone_size_agent_x,
-                                                                        self.zone_size_agent_y)
-                else:
-                    img = ObservationZoneWrapper.make_downsampled_image(img, self.zone_size_option_x,
-                                                                        self.zone_size_option_y)
-
-            if gray_scale_render:
-                if agent_render:
-                    img = ObservationZoneWrapper.sample_colors(img, self.thresh_binary_agent)
-                else:
-                    img = ObservationZoneWrapper.sample_colors(img, self.thresh_binary_option)
-
-            img_resize = cv2.resize(img, size, interpolation=cv2.INTER_NEAREST)
-
-            if env_unwrapped.viewer is None:
-                env_unwrapped.viewer = rendering.SimpleImageViewer()
-
-            env_unwrapped.viewer.imshow(img_resize)
-            return env_unwrapped.viewer.isopen
 
     @staticmethod
     def make_downsampled_image(image, zone_size_x, zone_size_y):

@@ -21,6 +21,7 @@ data = {
         "agent_file": "a2c.agent_a2c",
         "agent_name": "AgentA2C",
         "max_number_actions": 1000,
+        "display_environment": True,
 
         "seeds": [3],
         "number_episodes": 100000,

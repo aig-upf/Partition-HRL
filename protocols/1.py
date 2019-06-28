@@ -1,6 +1,7 @@
 data = {
         "agent_file": "agent",
         "agent_name": "AgentQMontezuma",
+        "display_environment": False,
 
         "seeds": [0],
         "number_episodes": 10000,

@@ -19,6 +19,7 @@ data = {
         "agent_file": "a2c.agent_a2c",
         "agent_name": "AgentA2C",
         "max_number_actions": 1000,
+        "display_environment": False,
 
         "seeds": [3],
         "number_episodes": 100000,
@@ -38,7 +39,7 @@ data = {
 
         # do we need this ?
         "probability_random_action_agent": 0.1,
-        "probability_random_action_agent_decay": 1/2000,
+        "probability_random_action_agent_decay": 1/5000,
         "penalty_death_option": -5,
         "penalty_option_action": -0.1,
         "reward_end_option": 1,
@@ -54,7 +55,7 @@ data = {
         "NUMBER_ZONES_OPTION_Y": 5 * 3 * 7,
         "THRESH_BINARY_OPTION": 0,
         "NUMBER_ZONES_AGENT_X": 2 ** 3,
-        "NUMBER_ZONES_AGENT_Y": 7,
+        "NUMBER_ZONES_AGENT_Y": 2*7,
         "THRESH_BINARY_AGENT": 40
         }
 

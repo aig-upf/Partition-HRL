@@ -30,6 +30,7 @@ class AgentA2C(AgentOptionMontezuma):
 
     def update_agent(self, o_r_d_i, option, train_episode=None):
         super().update_agent(o_r_d_i, option, train_episode)
+        print(self.policy)
 
     def get_policy(self):
         return QTree(self.parameters)
@@ -70,7 +71,6 @@ class AgentA2C(AgentOptionMontezuma):
                     intra_rewards.append(option.get_value(next_state))
 
             if intra_rewards:
-                print("intra rewards = " + str(max(intra_rewards)))
                 return max(intra_rewards)
             else:
                 return 0
@@ -201,7 +201,7 @@ class OptionA2C(OptionAbstract):
         if end_option:
             total_reward += obs_equal(self.terminal_state, o_r_d_i[0]["agent"]) * self.parameters["reward_end_option"]
             total_reward += not obs_equal(self.terminal_state, o_r_d_i[0]["agent"]) * \
-                                self.parameters["penalty_end_option"]
+                self.parameters["penalty_end_option"]
 
         total_reward += self.parameters["penalty_option_action"]
         total_reward += o_r_d_i[2] * self.parameters["penalty_death_option"]
