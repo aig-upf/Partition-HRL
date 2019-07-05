@@ -102,7 +102,8 @@ class OptionA2C(OptionAbstract):
                                       self.parameters["LEARNING_RATE_CRITIC"],
                                       self.parameters["SHARED_CONVOLUTION_LAYERS"])
 
-        self.gamma = self.parameters["GAMMA"]
+        self.gamma_min = self.parameters["GAMMA_MIN"]
+        self.gamma_max = self.parameters["GAMMA_MAX"]
         self.learning_rate_actor = self.parameters["LEARNING_RATE_ACTOR"]
         self.learning_rate_critic = self.parameters["LEARNING_RATE_CRITIC"]
         self.batch_size = self.parameters["BATCH_SIZE"]
@@ -110,7 +111,7 @@ class OptionA2C(OptionAbstract):
         self.buffer = ExperienceReplay(self.batch_size)
         self.state = None
 
-    def _get_actor_critic_error(self, batch):
+    def _get_actor_critic_error(self, batch, train_episode):
 
         states_t = np.array([o[1][0] for o in batch])
         p = self.main_model_nn.prediction_critic(states_t)
@@ -135,17 +136,18 @@ class OptionA2C(OptionAbstract):
             rewards[i] = r
             a_one_hot[i][a_index] = 1
 
-        y_critic, adv_actor = self._returns_advantages(rewards, dones, p, p_)
+        y_critic, adv_actor = self._returns_advantages(rewards, dones, p, p_, train_episode)
         y_critic = np.expand_dims(y_critic, axis=-1)
 
         return states_t, adv_actor, a_one_hot, y_critic
 
-    def _returns_advantages(self, rewards, dones, values, next_value):
+    def _returns_advantages(self, rewards, dones, values, next_value, train_episode):
         # next_value is the bootstrap value estimate of a future state (the critic)
         returns = np.append(np.zeros_like(rewards), next_value, axis=-1)
         # returns are calculated as discounted sum of future rewards
+        gamma = self.compute_current_gamma(train_episode)
         for t in reversed(range(rewards.shape[0])):
-            returns[t] = rewards[t] + self.gamma * returns[t + 1] * (1 - dones[t])
+            returns[t] = rewards[t] + gamma * returns[t + 1] * (1 - dones[t])
         returns = returns[:-1]
         # advantages are returns - baseline, value estimates in our case
         advantages = returns - values
@@ -157,12 +159,12 @@ class OptionA2C(OptionAbstract):
 
         return np.random.choice(self.action_space, p=predict)
 
-    def replay(self):
+    def replay(self, train_episode):
 
         if self.buffer.buffer_len() >= self.batch_size:
             batch = self.buffer.sample(self.batch_size, False)
 
-            x, adv_actor, a_one_hot, y_critic = self._get_actor_critic_error(batch)
+            x, adv_actor, a_one_hot, y_critic = self._get_actor_critic_error(batch, train_episode)
 
             self.main_model_nn.train_actor(x, a_one_hot, adv_actor, self.weight_ce_exploration)
             self.main_model_nn.train_critic(x, y_critic)
@@ -177,7 +179,7 @@ class OptionA2C(OptionAbstract):
             self.buffer.add((self.state[0], action, r, o_r_d_i[0]["option"], o_r_d_i[2]))
 
         self.state = np.array([o_r_d_i[0]["option"]])
-        self.replay()
+        self.replay(train_episode)
 
     def reset(self, initial_state, current_state, terminal_state):
 
@@ -225,3 +227,11 @@ class OptionA2C(OptionAbstract):
             self.activated = False
 
         return end_option
+
+    def compute_current_gamma(self, train_episode):
+        if self.parameters["EVOLUTION"] == "linear":
+            return (self.gamma_max - self.gamma_min) / self.parameters["max_number_actions"] * train_episode + \
+                   self.gamma_min
+
+        else:
+            raise NotImplementedError("Evolution of Gamma not implemented")

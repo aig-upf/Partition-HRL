@@ -29,7 +29,9 @@ data = {
 
         # please check the values below
         "DEVICE": 'cpu:0',
-        "GAMMA": 0.99,
+        "GAMMA_MAX": 0.99,
+        "GAMMA_MIN": 0.1,
+        "EVOLUTION": "linear",
         "LEARNING_RATE_ACTOR": 0.00001,
         "LEARNING_RATE_CRITIC": 0.0001,
         "BATCH_SIZE": 32,
