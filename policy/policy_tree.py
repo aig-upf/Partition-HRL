@@ -1,5 +1,5 @@
 from ao.policies.agent.agent_policy import PolicyAbstractAgent
-from ao.structures.tree import Tree, Node
+from ao.structures.tree import Tree
 from ao.utils.miscellaneous import obs_equal
 import numpy as np
 

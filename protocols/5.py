@@ -21,7 +21,7 @@ data = {
         "agent_file": "a2c.agent_a2c",
         "agent_name": "AgentA2C",
         "max_number_actions": 1000,
-        "display_environment": True,
+        "display_environment": False,
 
         "seeds": [3],
         "number_episodes": 100000,
@@ -30,7 +30,9 @@ data = {
 
         # please check the values below
         "DEVICE": 'cpu:0',
-        "GAMMA": 0.99,
+        "GAMMA_MAX": 0.99,
+        "GAMMA_MIN": 0.1,
+        "EVOLUTION": "linear",
         "LEARNING_RATE_ACTOR": 0.00001,
         "LEARNING_RATE_CRITIC": 0.0001,
         "BATCH_SIZE": 6,
@@ -41,6 +43,7 @@ data = {
 
         # do we need this ?
         "probability_random_action_agent": 0.1,
+        "probability_random_action_agent_decay": 1/5000,
         "penalty_death_option": -1,
         "penalty_option_action": -0.1,
         "reward_end_option": 1,
