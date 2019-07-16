@@ -1,6 +1,9 @@
 from agent.a2c.models import SharedConvLayers, CriticNetwork, ActorNetwork
 import tensorflow as tf
 import os
+from gym_minigrid.register import env_list
+
+
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
@@ -50,7 +53,7 @@ data = {
         "penalty_end_option": -1,
 
         # environment's parameters
-        "env_name": "MiniGrid-Empty-8x8-v0",
+        "env_name": "MiniGrid-FourRooms-v0",
         "obs_wrapper_name": "obs_a2c_stacked_frames",
         "stack_images_length": 4,
         "NUMBER_ZONES_GRIDWORLD_X": 2 ** 2 * 3 * 7,

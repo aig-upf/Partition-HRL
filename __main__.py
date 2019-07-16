@@ -39,7 +39,7 @@ class Experiment(object):
         """
         print("charging the environment: " + str(self.parameters["env_name"]))
         time.sleep(0.5)
-        env = gym.make(self.parameters["env_name"]).env
+        env = gym.make(self.parameters["env_name"])   # changed from env = gym.make(self.parameters["env_name"]).env
 
         if "obs_wrapper_name" in self.parameters.keys():
             print("observation wrapper name is " + str(self.parameters["obs_wrapper_name"]))
