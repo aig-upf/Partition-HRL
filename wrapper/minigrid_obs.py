@@ -16,35 +16,37 @@ class ObservationZoneWrapper(gym.ObservationWrapper):
         self.images_stack = deque([], maxlen=self.parameters["stack_images_length"])
 
     def render(self, size=(512, 512), agent_render=True, close=False, blurred_render=False, gray_scale_render=False):
+        return self.env.render()
 
-        if hasattr(self.env.__class__, 'render_scaled'):  # we call render_scaled function from gridenvs
-            return self.env.render_scaled(size, "human", close)
-
-        else:  # we scale the image from other environment (like Atari)
-            env_unwrapped = self.env.unwrapped
-            img = env_unwrapped.render(mode = 'rgb_array', highlight = False)
-
-            if blurred_render:
-                if agent_render:
-                    img = ObservationZoneWrapper.make_downsampled_image(img, self.zone_size_agent_x,
-                                                                        self.zone_size_agent_y)
-                else:
-                    img = ObservationZoneWrapper.make_downsampled_image(img, self.zone_size_option_x,
-                                                                        self.zone_size_option_y)
-
-            if gray_scale_render:
-                if agent_render:
-                    img = ObservationZoneWrapper.sample_colors(img, self.thresh_binary_agent)
-                else:
-                    img = ObservationZoneWrapper.sample_colors(img, self.thresh_binary_option)
-
-            img_resize = cv2.resize(img, size, interpolation=cv2.INTER_NEAREST)
-
-            if env_unwrapped.viewer is None:
-                env_unwrapped.viewer = rendering.SimpleImageViewer()
-
-            env_unwrapped.viewer.imshow(img_resize)
-            return env_unwrapped.viewer.isopen
+        # if hasattr(self.env.__class__, 'render_scaled'):  # we call render_scaled function from gridenvs
+        #     return self.env.render_scaled(size, "human", close)
+        #
+        # else:  # we scale the image from other environment (like Atari)
+        #     env_unwrapped = self.env.unwrapped
+        #     img = env_unwrapped.render(mode='rgb_array', highlight=False)
+        #
+        #     if blurred_render:
+        #         if agent_render:
+        #             img = ObservationZoneWrapper.make_downsampled_image(img, self.zone_size_agent_x,
+        #                                                                 self.zone_size_agent_y)
+        #         else:
+        #             img = ObservationZoneWrapper.make_downsampled_image(img, self.zone_size_option_x,
+        #                                                                 self.zone_size_option_y)
+        #
+        #     if gray_scale_render:
+        #         if agent_render:
+        #             img = ObservationZoneWrapper.sample_colors(img, self.thresh_binary_agent)
+        #         else:
+        #             img = ObservationZoneWrapper.sample_colors(img, self.thresh_binary_option)
+        #
+        #     img_resize = cv2.resize(img, size, interpolation=cv2.INTER_NEAREST)
+        #
+        #     print(type(env_unwrapped).__base__)
+        #     if env_unwrapped.viewer is None:
+        #         env_unwrapped.viewer = rendering.SimpleImageViewer()
+        #
+        #     env_unwrapped.viewer.imshow(img_resize)
+        #     return env_unwrapped.viewer.isopen
 
     @staticmethod
     def make_downsampled_image(image, zone_size_x, zone_size_y):
@@ -52,7 +54,6 @@ class ObservationZoneWrapper(gym.ObservationWrapper):
         len_x = len(image[0])  # with MontezumaRevenge-v4 : 210
         if (len_x % zone_size_x == 0) and (len_y % zone_size_y == 0):
             downsampling_size = (len_x // zone_size_x, len_y // zone_size_y)
-            print(downsampling_size)
             # vector of size "downsampled_size"
             img_blurred = cv2.resize(image, downsampling_size, interpolation=cv2.INTER_AREA)
             return img_blurred
@@ -65,7 +66,6 @@ class ObservationZoneWrapper(gym.ObservationWrapper):
         env_unwrapped = self.env.unwrapped
         img_option = env_unwrapped.render(mode = 'rgb_array', highlight = False)  # to get the rgb image
         img_agent = img_option.copy()
-        print(img_option.shape)
         img_option = ObservationZoneWrapper.gray_scale(img_option)
         img_option = img_option/255
         # option observation

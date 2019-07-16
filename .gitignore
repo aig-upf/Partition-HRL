@@ -4,3 +4,4 @@ RL_venv/
 .idea/
 __pycache__
 results/
+env/

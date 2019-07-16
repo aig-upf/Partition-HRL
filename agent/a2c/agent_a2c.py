@@ -1,5 +1,6 @@
 from ao.options.options import OptionAbstract
 from ao.utils.miscellaneous import obs_equal
+from ao.utils.show_render import ShowRenderMiniGrid
 from agent.agent import AgentOptionMontezuma
 from agent.a2c.utils import ExperienceReplay
 from agent.a2c.models import A2CEager
@@ -16,14 +17,13 @@ class AgentA2C(AgentOptionMontezuma):
         self.nb_actions = 0
 
     def reset(self, initial_state):
-        print(len(self))
         self.nb_actions = 0
         super().reset(initial_state)
 
     def check_end_agent(self, o_r_d_i, current_option, train_episode):
         self.nb_actions += 1
         # o_r_d_i[-1]['ale.lives'] != 6
-        return  o_r_d_i[-1] or bool(self.nb_actions > self.parameters["max_number_actions"]) or \
+        return  o_r_d_i[2] or bool(self.nb_actions > self.parameters["max_number_actions"]) or \
             self.policy.end_novelty
 
     def get_option(self) -> OptionAbstract:
@@ -31,7 +31,6 @@ class AgentA2C(AgentOptionMontezuma):
 
     def update_agent(self, o_r_d_i, option, train_episode=None):
         super().update_agent(o_r_d_i, option, train_episode)
-        print(self.policy)
 
     def get_policy(self):
         return QTree(self.parameters)
@@ -46,7 +45,7 @@ class AgentA2C(AgentOptionMontezuma):
         """
         reward = self.option_list[option_index].score
         if reward > 0:
-            print("reward !")
+            print("reward : " + str(reward))
         return reward
 
     def get_intra_reward(self, end_option, next_state, current_option, train_episode):
@@ -75,6 +74,12 @@ class AgentA2C(AgentOptionMontezuma):
                 return max(intra_rewards)
             else:
                 return 0
+
+    def get_show_render_train(self, env):
+        return ShowRenderMiniGrid(env)
+
+    def get_show_render_simulate(self, env):
+        return ShowRenderMiniGrid(env)
 
 
 class OptionA2C(OptionAbstract):
