@@ -53,13 +53,17 @@ data = {
         "penalty_end_option": -1,
 
         # environment's parameters
-        "env_name": "MiniGrid-FourRooms-v0",
-        "obs_wrapper_name": "obs_a2c_stacked_frames",
+        "env_name": "MiniGrid-Empty-5x5-v0",
+        "obs_wrapper_name": "minigrid_obs",
         "stack_images_length": 4,
-        "NUMBER_ZONES_GRIDWORLD_X": 2 ** 2 * 3 * 7,
-        "NUMBER_ZONES_GRIDWORLD_Y": 2 ** 2 * 3 * 7,
-        "NUMBER_ZONES_AGENT_X": 3,
-        "NUMBER_ZONES_AGENT_Y": 3,
+        "NUMBER_ZONES_GRIDWORLD_X": 608,
+        "NUMBER_ZONES_GRIDWORLD_Y": 608,
+        "NUMBER_ZONES_OPTION_X": 608,
+        "NUMBER_ZONES_OPTION_Y": 608,
+        "NUMBER_ZONES_AGENT_X": int(608/32),
+        "NUMBER_ZONES_AGENT_Y": int(608/32),
+        "THRESH_BINARY_OPTION": 0,
+        "THRESH_BINARY_AGENT": 40
         }
 
 data.update({"ZONE_SIZE_AGENT_X": data["NUMBER_ZONES_GRIDWORLD_X"] // data["NUMBER_ZONES_AGENT_X"],
