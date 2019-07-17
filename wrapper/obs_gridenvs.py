@@ -19,7 +19,7 @@ class ObservationZoneWrapper(gym.ObservationWrapper):
         self.observation_option = None
 
     def render(self, size=(512, 512), agent_render=True, close=False, blurred_render=False, gray_scale_render=False):
-        self.env.display_image(rgb_array=self.observation_agent)
+        self.env.render()
 
     @staticmethod
     def make_downsampled_image(image, zone_size_x, zone_size_y):
@@ -36,7 +36,7 @@ class ObservationZoneWrapper(gym.ObservationWrapper):
                             " can not be fragmented into zones " + str(zone_size_x) + "x" + str(zone_size_y))
 
     def observation(self, observation):
-        img_option = self.env.render(mode='rgb_array', highlight=False)  # to get the rgb image
+        img_option = observation
         img_agent = img_option.copy()
         img_option = ObservationZoneWrapper.gray_scale(img_option)
         img_option = img_option/255
