@@ -12,7 +12,7 @@ class SharedConvLayers(keras.Model):
         self.conv2 = keras.layers.Conv2D(64, 4, (2, 2), padding='VALID', activation='elu')
         self.conv3 = keras.layers.Conv2D(64, 3, (1, 1), padding='VALID', activation='elu')
         self.flatten = keras.layers.Flatten()
-        self.dense = keras.layers.Dense(512)
+        self.dense = keras.layers.Dense(256)
 
     def call(self, x):
         x = self.conv1(x)
@@ -141,7 +141,7 @@ class A2CEager:
 
         return loss_value, tape.gradient(loss_value, model.trainable_variables)
 
-    def train_critic(self, s, y, max_grad_norm=1.):
+    def train_critic(self, s, y, max_grad_norm=6):
 
         s = np.array(s, dtype=np.float32)
         s = tf.convert_to_tensor(s)
@@ -150,13 +150,13 @@ class A2CEager:
 
         # print("CRITIC", loss_value)
 
-        # grads, grad_norm = tf.clip_by_global_norm(grads, max_grad_norm)
+        grads, grad_norm = tf.clip_by_global_norm(grads, max_grad_norm)
 
         self.optimizer_critic.apply_gradients(zip(grads, self.model_critic.trainable_variables), self.global_step)
 
         return [None, None]
 
-    def train_actor(self, s, one_hot_a, advantage, weight_ce=0, max_grad_norm=0.5):
+    def train_actor(self, s, one_hot_a, advantage, weight_ce=0, max_grad_norm=6):
         s = np.array(s, dtype=np.float32)
         s = tf.convert_to_tensor(s)
 
@@ -164,7 +164,7 @@ class A2CEager:
 
         # print("ACTOR", loss_value)
 
-        # grads, grad_norm = tf.clip_by_global_norm(grads, max_grad_norm)
+        grads, grad_norm = tf.clip_by_global_norm(grads, max_grad_norm)
 
         self.optimizer_actor.apply_gradients(zip(grads, self.model_actor.trainable_variables),
                                              self.global_step)

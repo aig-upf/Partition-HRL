@@ -46,6 +46,7 @@ class AgentA2C(AgentOptionMontezuma):
         reward = self.option_list[option_index].score
         if reward > 0:
             print("reward : " + str(reward))
+        print("reward : " + str(reward))
         return reward
 
     def get_intra_reward(self, end_option, next_state, current_option, train_episode):
@@ -120,7 +121,7 @@ class OptionA2C(OptionAbstract):
     def _get_actor_critic_error(self, batch, train_episode):
 
         states_t = np.array([o[1][0] for o in batch])
-        p = self.main_model_nn.prediction_critic(states_t)
+        p = self.main_model_nn.prediction_critic(states_t)[0]
         a_one_hot = np.zeros((len(batch), len(self.action_space)))
         dones = np.zeros((len(batch)))
         rewards = np.zeros((len(batch)))
@@ -238,6 +239,9 @@ class OptionA2C(OptionAbstract):
         if self.parameters["EVOLUTION"] == "linear":
             return (self.gamma_max - self.gamma_min) / self.parameters["max_number_actions"] * train_episode + \
                    self.gamma_min
+
+        if self.parameters["EVOLUTION"] == "static":
+            return self.gamma_max
 
         else:
             raise NotImplementedError("Evolution of Gamma not implemented")

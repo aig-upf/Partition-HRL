@@ -33,25 +33,25 @@ data = {
         "DEVICE": 'cpu:0',
         "GAMMA_MAX": 0.99,
         "GAMMA_MIN": 0.1,
-        "EVOLUTION": "linear",
+        "EVOLUTION": "static",
         "LEARNING_RATE_ACTOR": 0.00001,
         "LEARNING_RATE_CRITIC": 0.0001,
         "BATCH_SIZE": 6,
         "WEIGHT_CE_EXPLORATION": 0.01,
         "SHARED_CONVOLUTION_LAYERS": shared_conv_layers,
-        "CRITIC_NETWORK": critic_network,
+        "CRITIC_NETWORK": CriticNetwork,
         "ACTOR_NETWORK": ActorNetwork,
 
         # do we need this ?
         "probability_random_action_agent": 0.1,
         "probability_random_action_agent_decay": 1/5000,
         "penalty_death_option": -1,
-        "penalty_option_action": -0.1,
+        "penalty_option_action": 0,
         "reward_end_option": 1,
         "penalty_end_option": -1,
 
         # environment's parameters
-        "env_name": "GE_PathKeyDoor-v0",
+        "env_name": "GE_MazeKeyDoor-v0",
         "obs_wrapper_name": "obs_gridenvs",
         "stack_images_length": 4,
         "NUMBER_ZONES_GRIDWORLD_X": 84,
@@ -59,7 +59,7 @@ data = {
         "NUMBER_ZONES_OPTION_X": 84,
         "NUMBER_ZONES_OPTION_Y": 84,
         "NUMBER_ZONES_AGENT_X": 2,
-        "NUMBER_ZONES_AGENT_Y": 1,
+        "NUMBER_ZONES_AGENT_Y": 2,
         "THRESH_BINARY_OPTION": 0,
         "THRESH_BINARY_AGENT": 40
         }

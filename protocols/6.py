@@ -41,7 +41,7 @@ data = {
         "BATCH_SIZE": 6,
         "WEIGHT_CE_EXPLORATION": 0.01,
         "SHARED_CONVOLUTION_LAYERS": shared_conv_layers,
-        "CRITIC_NETWORK": critic_network,
+        "CRITIC_NETWORK": CriticNetwork,
         "ACTOR_NETWORK": ActorNetwork,
 
         # do we need this ?

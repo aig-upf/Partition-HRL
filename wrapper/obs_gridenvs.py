@@ -38,16 +38,17 @@ class ObservationZoneWrapper(gym.ObservationWrapper):
     def observation(self, observation):
         img_option = observation
         img_agent = img_option.copy()
-        img_option = ObservationZoneWrapper.gray_scale(img_option)
+        #img_option = ObservationZoneWrapper.gray_scale(img_option)
         img_option = img_option/255
 
         self.images_stack.append(img_option)
 
-        img_option_stacked = np.zeros((self.images_stack[0].shape[0], self.images_stack[0].shape[1],
-                                       self.images_stack[0].shape[2] * 4), dtype=np.float32)
-
+        img_option_stacked = np.zeros((img_option.shape[0], img_option.shape[1],
+                                img_option.shape[2]*self.parameters["stack_images_length"]), dtype=np.float32)
+        index_image = 0
         for i in range(0, self.images_stack.__len__()):
-            img_option_stacked[..., i - 1:i] = self.images_stack[i]
+            img_option_stacked[..., index_image:index_image+img_option.shape[2]] = self.images_stack[i]
+            index_image = index_image+img_option.shape[2]
 
         # agent observation
         img_agent = ObservationZoneWrapper.make_downsampled_image(img_agent, self.zone_size_agent_x,
