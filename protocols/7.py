@@ -59,9 +59,9 @@ data = {
         "NUMBER_ZONES_OPTION_X": 84,
         "NUMBER_ZONES_OPTION_Y": 84,
         "NUMBER_ZONES_AGENT_X": 2,
-        "NUMBER_ZONES_AGENT_Y": 2,
+        "NUMBER_ZONES_AGENT_Y": 1,
         "THRESH_BINARY_OPTION": 0,
-        "THRESH_BINARY_AGENT": 40
+        "THRESH_BINARY_AGENT": 0
         }
 
 data.update({"ZONE_SIZE_AGENT_X": data["NUMBER_ZONES_GRIDWORLD_X"] // data["NUMBER_ZONES_AGENT_X"],

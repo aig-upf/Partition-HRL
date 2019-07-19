@@ -1,6 +1,6 @@
 from ao.options.options import OptionAbstract
 from ao.utils.miscellaneous import obs_equal
-from ao.utils.show_render import ShowRenderMiniGrid
+from ao.utils.show_render import ShowRender
 from agent.agent import AgentOptionMontezuma
 from agent.a2c.utils import ExperienceReplay
 from agent.a2c.models import A2CEager
@@ -46,7 +46,7 @@ class AgentA2C(AgentOptionMontezuma):
         reward = self.option_list[option_index].score
         if reward > 0:
             print("reward : " + str(reward))
-        print("reward : " + str(reward))
+            
         return reward
 
     def get_intra_reward(self, end_option, next_state, current_option, train_episode):
@@ -75,12 +75,6 @@ class AgentA2C(AgentOptionMontezuma):
                 return max(intra_rewards)
             else:
                 return 0
-
-    def get_show_render_train(self, env):
-        return ShowRenderMiniGrid(env)
-
-    def get_show_render_simulate(self, env):
-        return ShowRenderMiniGrid(env)
 
 
 class OptionA2C(OptionAbstract):

@@ -18,8 +18,6 @@ Options:
 import gym
 from docopt import docopt
 import importlib.util
-# todo add the right wrapper following the protocol information (a2c wrapper or regular wrapper)
-import time
 
 
 class Experiment(object):
@@ -38,12 +36,10 @@ class Experiment(object):
         :return: the environment with parameters specified in the protocol
         """
         print("charging the environment: " + str(self.parameters["env_name"]))
-        time.sleep(0.5)
         env = gym.make(self.parameters["env_name"])  # changed from env = gym.make(self.parameters["env_name"]).env
 
         if "obs_wrapper_name" in self.parameters.keys():
             print("observation wrapper name is " + str(self.parameters["obs_wrapper_name"]))
-            time.sleep(0.5)
             obs = getattr(importlib.import_module("wrapper." + self.parameters["obs_wrapper_name"]),
                           "ObservationZoneWrapper")
 
@@ -51,7 +47,6 @@ class Experiment(object):
 
         else:
             print("No observation wrapper.")
-            time.sleep(0.5)
             return env
 
     def get_agent(self):
@@ -59,9 +54,8 @@ class Experiment(object):
         :return: the agent with parameters specified in the parameters
         """
         print("agent : " + str(self.parameters["agent_name"]))
-        time.sleep(1.5)
-        agent = getattr(importlib.import_module("agent." + self.parameters["agent_file"]), self.parameters["agent_name"])
-        return agent(action_space=range(self.env.action_space.n), parameters=self.parameters)
+        ag = getattr(importlib.import_module("agent." + self.parameters["agent_file"]), self.parameters["agent_name"])
+        return ag(action_space=range(self.env.action_space.n), parameters=self.parameters)
 
     def run(self):
         # loop on the seed to simulate the agent

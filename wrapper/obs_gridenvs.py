@@ -18,31 +18,13 @@ class ObservationZoneWrapper(gym.ObservationWrapper):
         self.observation_agent = None
         self.observation_option = None
 
-    def render(self, size=(512, 512), agent_render=True, close=False, blurred_render=False, gray_scale_render=False):
-        self.env.render()
-
-    @staticmethod
-    def make_downsampled_image(image, zone_size_x, zone_size_y):
-        len_y = len(image)  # with MontezumaRevenge-v4 : 160
-        len_x = len(image[0])  # with MontezumaRevenge-v4 : 210
-        if (len_x % zone_size_x == 0) and (len_y % zone_size_y == 0):
-            downsampling_size = (len_x // zone_size_x, len_y // zone_size_y)
-            # vector of size "downsampled_size"
-            img_blurred = cv2.resize(image, downsampling_size, interpolation=cv2.INTER_AREA)
-            return img_blurred
-
-        else:
-            raise Exception("The gridworld " + str(len_x) + "x" + str(len_y) +
-                            " can not be fragmented into zones " + str(zone_size_x) + "x" + str(zone_size_y))
-
     def observation(self, observation):
         img_option = observation
         img_agent = img_option.copy()
-        #img_option = ObservationZoneWrapper.gray_scale(img_option)
-        img_option = img_option/255
 
+        # option observation
+        img_option = ObservationZoneWrapper.gray_scale(img_option)
         self.images_stack.append(img_option)
-
         img_option_stacked = np.zeros((img_option.shape[0], img_option.shape[1],
                                 img_option.shape[2]*self.parameters["stack_images_length"]), dtype=np.float32)
         index_image = 0
@@ -59,16 +41,30 @@ class ObservationZoneWrapper(gym.ObservationWrapper):
         self.observation_agent = img_agent
         self.observation_option = img_option
 
-        return {"agent": img_agent, "option": img_option_stacked}
+        return {'vanilla': observation, "agent": img_agent, "option": img_option_stacked}
 
     @staticmethod
     def sample_colors(image, threshold):
         img = cv2.medianBlur(image, 1)
-        _, img = cv2.threshold(img, threshold, 255, cv2.THRESH_BINARY)
+        #_, img = cv2.threshold(img, threshold, 255, cv2.THRESH_BINARY)
         return img
 
     @staticmethod
     def gray_scale(image):
-        im = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        im = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) / 255
         im = im.reshape((*im.shape, 1))  # reshape for the neural network for a2c
         return im
+
+    @staticmethod
+    def make_downsampled_image(image, zone_size_x, zone_size_y):
+        len_y = len(image)  # with MontezumaRevenge-v4 : 160
+        len_x = len(image[0])  # with MontezumaRevenge-v4 : 210
+        if (len_x % zone_size_x == 0) and (len_y % zone_size_y == 0):
+            downsampling_size = (len_x // zone_size_x, len_y // zone_size_y)
+            # vector of size "downsampled_size"
+            img_blurred = cv2.resize(image, downsampling_size, interpolation=cv2.INTER_AREA)
+            return img_blurred
+
+        else:
+            raise Exception("The gridworld " + str(len_x) + "x" + str(len_y) +
+                            " can not be fragmented into zones " + str(zone_size_x) + "x" + str(zone_size_y))
