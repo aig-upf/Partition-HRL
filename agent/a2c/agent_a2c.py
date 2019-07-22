@@ -92,21 +92,17 @@ class OptionA2C(OptionAbstract):
 
         self.action_size = len(action_space)
         # shared variable
-        self.main_model_nn = A2CEager(self.input_shape_nn,
-                                      32,
+        self.main_model_nn = A2CEager(32,
                                       self.action_size,
                                       'A2Cnetwork',
                                       self.parameters["DEVICE"],
                                       self.parameters["CRITIC_NETWORK"],
                                       self.parameters["ACTOR_NETWORK"],
-                                      self.parameters["LEARNING_RATE_ACTOR"],
-                                      self.parameters["LEARNING_RATE_CRITIC"],
+                                      self.parameters["LEARNING_RATE"],
                                       self.parameters["SHARED_CONVOLUTION_LAYERS"])
 
         self.gamma_min = self.parameters["GAMMA_MIN"]
         self.gamma_max = self.parameters["GAMMA_MAX"]
-        self.learning_rate_actor = self.parameters["LEARNING_RATE_ACTOR"]
-        self.learning_rate_critic = self.parameters["LEARNING_RATE_CRITIC"]
         self.batch_size = self.parameters["BATCH_SIZE"]
         self.weight_ce_exploration = self.parameters["WEIGHT_CE_EXPLORATION"]
         self.buffer = ExperienceReplay(self.batch_size)
@@ -115,7 +111,7 @@ class OptionA2C(OptionAbstract):
     def _get_actor_critic_error(self, batch, train_episode):
 
         states_t = np.array([o[1][0] for o in batch])
-        p = self.main_model_nn.prediction_critic(states_t)[0]
+        p = self.main_model_nn.prediction_critic(states_t)[:, 0]
         a_one_hot = np.zeros((len(batch), len(self.action_space)))
         dones = np.zeros((len(batch)))
         rewards = np.zeros((len(batch)))
@@ -167,8 +163,7 @@ class OptionA2C(OptionAbstract):
 
             x, adv_actor, a_one_hot, y_critic = self._get_actor_critic_error(batch, train_episode)
 
-            self.main_model_nn.train_actor(x, a_one_hot, adv_actor, self.weight_ce_exploration)
-            self.main_model_nn.train_critic(x, y_critic)
+            self.main_model_nn.train(x, y_critic, a_one_hot, adv_actor, self.weight_ce_exploration)
 
             self.buffer.reset_buffer()
 
@@ -200,14 +195,16 @@ class OptionA2C(OptionAbstract):
         :param end_option:
         :return:
         """
+        print(o_r_d_i[1])
         total_reward = o_r_d_i[1] + intra_reward
+
         if end_option:
             total_reward += obs_equal(self.terminal_state, o_r_d_i[0]["agent"]) * self.parameters["reward_end_option"]
             total_reward += not obs_equal(self.terminal_state, o_r_d_i[0]["agent"]) * \
                 self.parameters["penalty_end_option"]
 
         total_reward += self.parameters["penalty_option_action"]
-        total_reward += o_r_d_i[2] * self.parameters["penalty_death_option"]
+        total_reward += o_r_d_i[2] * self.parameters["penalty_death_option"]  # is this right?...what about when it end correctly at the goal?
 
         return total_reward
 
