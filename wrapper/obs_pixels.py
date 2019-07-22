@@ -72,6 +72,7 @@ class ObsPixelWrapper(gym.ObservationWrapper):
         img_option = ObsPixelWrapper.make_gray_scale(img_option)
         return img_option
 
+
 class ObservationZoneWrapper(ObsPixelWrapper):
 
     def __init__(self, env, parameters):
