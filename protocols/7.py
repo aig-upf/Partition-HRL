@@ -35,7 +35,7 @@ data = {
         "GAMMA_MIN": 0.1,
         "EVOLUTION": "static",
         "LEARNING_RATE": 0.0001,
-        "BATCH_SIZE": 1,
+        "BATCH_SIZE": 6,
         "WEIGHT_CE_EXPLORATION": 0.01,
         "SHARED_CONVOLUTION_LAYERS": SharedConvLayers,
         "CRITIC_NETWORK": CriticNetwork,
@@ -45,9 +45,9 @@ data = {
         "probability_random_action_agent": 0.1,
         "probability_random_action_agent_decay": 1/5000,
         "penalty_death_option": -1,
-        "penalty_option_action": 0,
-        "reward_end_option": 1,
-        "penalty_end_option": -1,
+        "penalty_option_action": -0.1,
+        "reward_end_option": 0.1,
+        "penalty_end_option": -0.1,
 
         # environment's parameters
         "env_name": "GE_MazeKeyDoor-v0",

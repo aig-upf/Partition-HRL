@@ -79,6 +79,8 @@ class AgentA2C(AgentOptionMontezuma):
 
 class OptionA2C(OptionAbstract):
 
+    idCounter = 0
+
     def __init__(self, action_space, parameters, index):
         super().__init__(action_space, parameters, index)
 
@@ -108,6 +110,10 @@ class OptionA2C(OptionAbstract):
         self.buffer = ExperienceReplay(self.batch_size)
         self.state = None
 
+        self.option_id = OptionA2C.idCounter
+        OptionA2C.idCounter += 1
+
+
     def _get_actor_critic_error(self, batch, train_episode):
 
         states_t = np.array([o[1][0] for o in batch])
@@ -135,6 +141,8 @@ class OptionA2C(OptionAbstract):
 
         y_critic, adv_actor = self._returns_advantages(rewards, dones, p, p_, train_episode)
         y_critic = np.expand_dims(y_critic, axis=-1)
+
+        print(self.option_id, y_critic, rewards, adv_actor, dones)
 
         return states_t, adv_actor, a_one_hot, y_critic
 
@@ -179,9 +187,10 @@ class OptionA2C(OptionAbstract):
 
     def reset(self, initial_state, current_state, terminal_state):
 
-        super().reset_states(initial_state, terminal_state)
+        super().reset_states(initial_state , terminal_state)
         self.state = np.array([current_state])
-        self.buffer.reset_buffer()
+        #self.buffer.reset_buffer()
+        self.score = 0
 
     def compute_total_score(self, *args, **kwargs):
         pass
@@ -195,12 +204,10 @@ class OptionA2C(OptionAbstract):
         :param end_option:
         :return:
         """
-        print(o_r_d_i[1])
-        total_reward = o_r_d_i[1] + intra_reward
-
+        total_reward = o_r_d_i[1]# + intra_reward
         if end_option:
             total_reward += obs_equal(self.terminal_state, o_r_d_i[0]["agent"]) * self.parameters["reward_end_option"]
-            total_reward += not obs_equal(self.terminal_state, o_r_d_i[0]["agent"]) * \
+            total_reward += int(not obs_equal(self.terminal_state, o_r_d_i[0]["agent"])) * \
                 self.parameters["penalty_end_option"]
 
         total_reward += self.parameters["penalty_option_action"]
