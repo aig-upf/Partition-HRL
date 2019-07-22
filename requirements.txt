@@ -1,7 +1,7 @@
 -e git+https://github.com/aig-upf/gridenvs.git#egg=gridenvs
 -e git+https://github.com/DamienAllonsius/agent_option_library.git#egg=ao
 
-opencv_python==3.4.5.20
+opencv_python==4.1.0.25
 docopt==0.6.2
 gym==0.10.9
 Keras==2.2.4
