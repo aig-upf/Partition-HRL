@@ -1,6 +1,6 @@
 data = {"agent_name": "PlainDQNMontezuma",
         "agent_file": "agent_plain_dqn",
-        "display_environment": False,
+        "display_environment": True,
 
         "seeds": [0],
         "number_episodes": 200,

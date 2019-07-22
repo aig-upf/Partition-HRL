@@ -1,6 +1,6 @@
 data = {"agent_name": "AgentDQN",
         "agent_file": "agent_dqn",
-        "display_environment": False,
+        "display_environment": True,
 
         "seeds": [0],
         "number_episodes": 3000,
@@ -22,7 +22,7 @@ data = {"agent_name": "AgentDQN",
 
         # environment's parameters
         "env_name": "MontezumaRevenge-v0",
-        "obs_wrapper_name": "obs",
+        "obs_wrapper_name": "obs_pixels",
 
         "NUMBER_ZONES_MONTEZUMA_X": (2 ** 5) * 5,
         "NUMBER_ZONES_MONTEZUMA_Y": 2 * 3 * 5 * 7,

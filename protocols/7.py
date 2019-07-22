@@ -51,7 +51,7 @@ data = {
 
         # environment's parameters
         "env_name": "GE_MazeKeyDoor-v0",
-        "obs_wrapper_name": "obs_gridenvs",
+        "obs_wrapper_name": "obs_pixels_stacked_frames",
         "stack_images_length": 4,
         "OPTION_OBSERVATION_IMAGE_WIDTH": None,
         "OPTION_OBSERVATION_IMAGE_HEIGHT": None,

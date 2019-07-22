@@ -19,11 +19,10 @@ data = {
         "agent_file": "a2c.agent_a2c",
         "agent_name": "AgentA2C",
         "max_number_actions": 1000,
-        "display_environment": False,
+        "display_environment": True,
 
         "seeds": [3],
         "number_episodes": 100000,
-        "show_environment": False,
 
         "learning_rate": 0.001,
 
@@ -50,7 +49,7 @@ data = {
 
         # environment's parameters
         "env_name": "MontezumaRevenge-v0",
-        "obs_wrapper_name": "obs_a2c_stacked_frames",
+        "obs_wrapper_name": "obs_pixels_stacked_frames",
         "stack_images_length": 4,
         "NUMBER_ZONES_MONTEZUMA_X": (2 ** 5) * 5,
         "NUMBER_ZONES_MONTEZUMA_Y": 2 * 3 * 5 * 7,
