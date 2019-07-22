@@ -22,7 +22,7 @@ data = {
         "agent_file": "a2c.agent_a2c",
         "agent_name": "AgentA2C",
         "max_number_actions": 1000,
-        "display_environment": True,
+        "display_environment": False,
 
         "seeds": [3],
         "number_episodes": 100000,
@@ -59,8 +59,8 @@ data = {
         "NUMBER_ZONES_GRIDWORLD_Y": 84,
         "NUMBER_ZONES_OPTION_X": 84,
         "NUMBER_ZONES_OPTION_Y": 84,
-        "NUMBER_ZONES_AGENT_X": 2,
-        "NUMBER_ZONES_AGENT_Y": 2,
+        "NUMBER_ZONES_AGENT_X": 6,
+        "NUMBER_ZONES_AGENT_Y": 6,
         "THRESH_BINARY_OPTION": 0,
         "THRESH_BINARY_AGENT": 0
         }

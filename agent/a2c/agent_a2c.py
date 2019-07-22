@@ -141,6 +141,8 @@ class OptionA2C(OptionAbstract):
 
         y_critic, adv_actor = self._returns_advantages(rewards, dones, p, p_, train_episode)
         y_critic = np.expand_dims(y_critic, axis=-1)
+        
+        print(y_critic, rewards, adv_actor, dones)
 
         print(self.option_id, y_critic, rewards, adv_actor, dones)
 
@@ -204,14 +206,17 @@ class OptionA2C(OptionAbstract):
         :param end_option:
         :return:
         """
-        total_reward = o_r_d_i[1]# + intra_reward
+
+        total_reward = o_r_d_i[1]  # todo: + intra_reward
+
         if end_option:
-            total_reward += obs_equal(self.terminal_state, o_r_d_i[0]["agent"]) * self.parameters["reward_end_option"]
+            total_reward += int(obs_equal(self.terminal_state, o_r_d_i[0]["agent"])) * \
+                            self.parameters["reward_end_option"]
+            
             total_reward += int(not obs_equal(self.terminal_state, o_r_d_i[0]["agent"])) * \
                 self.parameters["penalty_end_option"]
 
         total_reward += self.parameters["penalty_option_action"]
-        total_reward += o_r_d_i[2] * self.parameters["penalty_death_option"]  # is this right?...what about when it end correctly at the goal?
 
         return total_reward
 

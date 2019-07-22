@@ -1,6 +1,7 @@
 venv
 RL_venv/
 *~
+*.png
 .idea/
 __pycache__
 results/
