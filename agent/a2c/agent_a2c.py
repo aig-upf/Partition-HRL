@@ -113,6 +113,8 @@ class OptionA2C(OptionAbstract):
         self.option_id = OptionA2C.idCounter
         OptionA2C.idCounter += 1
 
+        print("NUMBER OF OPTIONS DISCOVERED: ", OptionA2C.idCounter)
+
 
     def _get_actor_critic_error(self, batch, train_episode):
 
@@ -141,10 +143,8 @@ class OptionA2C(OptionAbstract):
 
         y_critic, adv_actor = self._returns_advantages(rewards, dones, p, p_, train_episode)
         y_critic = np.expand_dims(y_critic, axis=-1)
-        
-        print(y_critic, rewards, adv_actor, dones)
 
-        print(self.option_id, y_critic, rewards, adv_actor, dones)
+        #print(self.option_id, y_critic, rewards, adv_actor, dones)
 
         return states_t, adv_actor, a_one_hot, y_critic
 

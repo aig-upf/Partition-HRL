@@ -6,6 +6,9 @@ import inspect
 
 
 class SharedConvLayers(keras.Model):
+
+    idCounter = 0
+
     def __init__(self):
         super(SharedConvLayers, self).__init__(name="SharedConvLayers")
         self.conv1 = keras.layers.Conv2D(32, 8, (4, 4), padding='VALID', activation='elu', kernel_initializer='he_normal')
@@ -13,6 +16,9 @@ class SharedConvLayers(keras.Model):
         self.conv3 = keras.layers.Conv2D(64, 3, (1, 1), padding='VALID', activation='elu', kernel_initializer='he_normal')
         self.flatten = keras.layers.Flatten()
         self.dense = keras.layers.Dense(256)
+
+        self.id = SharedConvLayers.idCounter
+        SharedConvLayers.idCounter += 1
 
     def call(self, x):
 
@@ -38,11 +44,17 @@ class SharedDenseLayers(keras.Model):
 
 
 class CriticNetwork(keras.Model):
+
+    idCounter = 0
+
     def __init__(self, h_size, shared_observation_model=None):
         super(CriticNetwork, self).__init__(name="CriticNetwork")
         self.dense1 = keras.layers.Dense(h_size, activation='elu', kernel_initializer='he_normal')
         self.out = keras.layers.Dense(1, activation='linear')
         self.shared_observation_model = shared_observation_model
+
+        self.id = CriticNetwork.idCounter
+        CriticNetwork.idCounter += 1
 
     def call(self, x):
 
@@ -52,11 +64,17 @@ class CriticNetwork(keras.Model):
 
 
 class ActorNetwork(keras.Model):
+
+    idCounter = 0
+
     def __init__(self, h_size, n_actions, shared_observation_model=None):
         super(ActorNetwork, self).__init__(name="ActorNetwork")
         self.dense1 = keras.layers.Dense(h_size, activation='elu', kernel_initializer='he_normal')
         self.out = keras.layers.Dense(n_actions, activation=keras.activations.softmax)
         self.shared_observation_model = shared_observation_model
+
+        self.id = ActorNetwork.idCounter
+        ActorNetwork.idCounter += 1
 
     def call(self, x):
 
@@ -67,11 +85,16 @@ class ActorNetwork(keras.Model):
 
 class ActorCriticNetwork(keras.Model):
 
+    idCounter = 0
+
     def __init__(self, critic_model, actor_model, shared_observation_model=None):
         super(ActorCriticNetwork, self).__init__(name="ActorCriticNetwork")
         self.shared_observation_model = shared_observation_model
         self.critic_model = critic_model
         self.actor_model = actor_model
+
+        self.id = ActorCriticNetwork.idCounter
+        ActorCriticNetwork.idCounter += 1
 
     def call(self, x):
 
@@ -113,6 +136,10 @@ class A2CEager:
 
             self.optimizer = tf.train.RMSPropOptimizer(learning_rate=learning_rate)
             self.global_step = tf.Variable(0)
+
+            print("NUMBER OF OBSERVATION NETWORK: ", self.shared_observation_model.idCounter)
+            print("NUMBER OF ACTOR NETWORK: ", self.model_critic.idCounter)
+            print("NUMBER OF CRITIC NETWORK: ", self.model_actor.idCounter)
 
     def prediction_actor(self, s):
 
