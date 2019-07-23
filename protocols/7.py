@@ -37,7 +37,7 @@ data = {
         "LEARNING_RATE": 0.0001,
         "BATCH_SIZE": 6,
         "WEIGHT_CE_EXPLORATION": 0.01,
-        "SHARED_CONVOLUTION_LAYERS": SharedConvLayers,
+        "SHARED_CONVOLUTION_LAYERS": shared_conv_layers,
         "CRITIC_NETWORK": CriticNetwork,
         "ACTOR_NETWORK": ActorNetwork,
 
@@ -60,7 +60,7 @@ data = {
         "NUMBER_ZONES_OPTION_X": 84,
         "NUMBER_ZONES_OPTION_Y": 84,
         "NUMBER_ZONES_AGENT_X": 2,
-        "NUMBER_ZONES_AGENT_Y": 1,
+        "NUMBER_ZONES_AGENT_Y": 2,
         "THRESH_BINARY_OPTION": 0,
         "THRESH_BINARY_AGENT": 0
         }
