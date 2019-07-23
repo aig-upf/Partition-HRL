@@ -206,7 +206,6 @@ class OptionA2C(OptionAbstract):
         :param end_option:
         :return:
         """
-
         total_reward = o_r_d_i[1]  # todo: + intra_reward
 
         if end_option:
