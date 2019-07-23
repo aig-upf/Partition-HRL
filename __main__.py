@@ -36,7 +36,7 @@ class Experiment(object):
         :return: the environment with parameters specified in the protocol
         """
         print("charging the environment: " + str(self.parameters["env_name"]))
-        env = gym.make(self.parameters["env_name"])  # changed from env = gym.make(self.parameters["env_name"]).env
+        env = gym.make(self.parameters["env_name"])
 
         if "obs_wrapper_name" in self.parameters.keys():
             print("observation wrapper name is " + str(self.parameters["obs_wrapper_name"]))

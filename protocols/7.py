@@ -22,7 +22,7 @@ data = {
         "agent_file": "a2c.agent_a2c",
         "agent_name": "AgentA2C",
         "max_number_actions": 1000,
-        "display_environment": True,
+        "display_environment": False,
 
         "seeds": [3],
         "number_episodes": 100000,
@@ -51,7 +51,7 @@ data = {
 
         # environment's parameters
         "env_name": "GE_MazeKeyDoor-v0",
-        "obs_wrapper_name": "obs_pixels_stacked_frames",
+        "obs_wrapper_name": "obs_gridenvs",
         "stack_images_length": 4,
         "OPTION_OBSERVATION_IMAGE_WIDTH": None,
         "OPTION_OBSERVATION_IMAGE_HEIGHT": None,
