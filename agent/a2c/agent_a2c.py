@@ -1,6 +1,5 @@
 from ao.options.options import OptionAbstract
 from ao.utils.miscellaneous import obs_equal
-from ao.utils.show_render import ShowRender
 from agent.agent import AgentOptionMontezuma
 from agent.a2c.utils import ExperienceReplay
 from agent.a2c.models import A2CEager
@@ -43,11 +42,8 @@ class AgentA2C(AgentOptionMontezuma):
         :param train_episode:
         :return:
         """
-        reward = self.option_list[option_index].score
-        if reward > 0:
-            print("reward : " + str(reward))
-            
-        return reward
+        score_option = self.option_list[option_index].score
+        return score_option
 
     def get_intra_reward(self, end_option, next_state, current_option, train_episode):
         """
@@ -115,7 +111,6 @@ class OptionA2C(OptionAbstract):
 
         print("NUMBER OF OPTIONS DISCOVERED: ", OptionA2C.idCounter)
 
-
     def _get_actor_critic_error(self, batch, train_episode):
 
         states_t = np.array([o[1][0] for o in batch])
@@ -177,7 +172,7 @@ class OptionA2C(OptionAbstract):
 
             self.buffer.reset_buffer()
 
-    def update_option(self, o_r_d_i, intra_reward, action, end_option, train_episode):
+    def update_parameters(self, o_r_d_i, intra_reward, total_reward, action, end_option, train_episode):
         r = self.compute_total_reward(o_r_d_i, action, intra_reward, end_option)
 
         if train_episode:
@@ -191,11 +186,14 @@ class OptionA2C(OptionAbstract):
 
         super().reset_states(initial_state , terminal_state)
         self.state = np.array([current_state])
-        #self.buffer.reset_buffer()
+        # self.buffer.reset_buffer()
         self.score = 0
 
-    def compute_total_score(self, *args, **kwargs):
-        pass
+    def compute_total_score(self, o_r_d_i, action, end_option, train_episode):
+        if o_r_d_i[1] > 0:
+            return o_r_d_i[1]
+        else:
+            return 0
 
     def compute_total_reward(self, o_r_d_i, action, intra_reward, end_option):
         """

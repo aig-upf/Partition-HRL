@@ -21,7 +21,7 @@ data = {
         "agent_file": "a2c.agent_a2c",
         "agent_name": "AgentA2C",
         "max_number_actions": 1000,
-        "display_environment": False,
+        "display_environment": True,
 
         "seeds": [3],
         "number_episodes": 100000,
@@ -42,15 +42,15 @@ data = {
 
         # do we need this ?
         "probability_random_action_agent": 0.1,
-        "probability_random_action_agent_decay": 1/5000,
+        "probability_random_action_agent_decay": 1/500,
         "penalty_death_option": -1,
-        "penalty_option_action": -0.1,
+        "penalty_option_action": -0.2,
         "reward_end_option": 0.1,
         "penalty_end_option": -0.1,
 
         # environment's parameters
         "env_name": "GE_MazeKeyDoor-v0",
-        "obs_wrapper_name": "obs_gridenvs",
+        "obs_wrapper_name": "obs_pixels_stacked_frames",
         "stack_images_length": 4,
         "OPTION_OBSERVATION_IMAGE_WIDTH": None,
         "OPTION_OBSERVATION_IMAGE_HEIGHT": None,
@@ -58,10 +58,10 @@ data = {
         "NUMBER_ZONES_GRIDWORLD_Y": 84,
         "NUMBER_ZONES_OPTION_X": 84,
         "NUMBER_ZONES_OPTION_Y": 84,
-        "NUMBER_ZONES_AGENT_X": 2,
-        "NUMBER_ZONES_AGENT_Y": 2,
+        "NUMBER_ZONES_AGENT_X": 6,
+        "NUMBER_ZONES_AGENT_Y": 6,
         "THRESH_BINARY_OPTION": 0,
-        "THRESH_BINARY_AGENT": 0
+        "THRESH_BINARY_AGENT": 5
         }
 
 data.update({"ZONE_SIZE_AGENT_X": data["NUMBER_ZONES_GRIDWORLD_X"] // data["NUMBER_ZONES_AGENT_X"],
