@@ -47,11 +47,10 @@ class CriticNetwork(keras.Model):
 
     idCounter = 0
 
-    def __init__(self, h_size, shared_observation_model=None):
+    def __init__(self, h_size):
         super(CriticNetwork, self).__init__(name="CriticNetwork")
         self.dense1 = keras.layers.Dense(h_size, activation='elu', kernel_initializer='he_normal')
         self.out = keras.layers.Dense(1, activation='linear')
-        self.shared_observation_model = shared_observation_model
 
         self.id = CriticNetwork.idCounter
         CriticNetwork.idCounter += 1
@@ -67,11 +66,10 @@ class ActorNetwork(keras.Model):
 
     idCounter = 0
 
-    def __init__(self, h_size, n_actions, shared_observation_model=None):
+    def __init__(self, h_size, n_actions):
         super(ActorNetwork, self).__init__(name="ActorNetwork")
         self.dense1 = keras.layers.Dense(h_size, activation='elu', kernel_initializer='he_normal')
         self.out = keras.layers.Dense(n_actions, activation=keras.activations.softmax)
-        self.shared_observation_model = shared_observation_model
 
         self.id = ActorNetwork.idCounter
         ActorNetwork.idCounter += 1
@@ -123,12 +121,12 @@ class A2CEager:
                 self.shared_observation_model = shared_observation_model
 
             if inspect.isclass(model_critic):
-                self.model_critic = model_critic(h_size, self.shared_observation_model)
+                self.model_critic = model_critic(h_size)
             else:
                 self.model_critic = model_critic
 
             if inspect.isclass(model_actor):
-                self.model_actor = model_actor(h_size, n_actions, self.shared_observation_model)
+                self.model_actor = model_actor(h_size, n_actions)
             else:
                 self.model_actor = model_actor
 
