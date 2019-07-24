@@ -6,7 +6,6 @@ from agent.a2c.models import A2CEager
 from policy.policy_tree import QTree
 import numpy as np
 
-
 class AgentA2C(AgentOptionMontezuma):
 
     def __init__(self, action_space, parameters):
@@ -214,6 +213,10 @@ class OptionA2C(OptionAbstract):
                 self.parameters["penalty_end_option"]
 
         total_reward += self.parameters["penalty_option_action"]
+
+        if end_option:
+
+            print(hash(self.initial_state.data.tobytes()), self.option_id, hash(self.terminal_state.data.tobytes()))
 
         return total_reward
 
