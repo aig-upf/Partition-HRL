@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """ Delta project
- Creates an agent which interacts with the Montezuma's revenge
+ Creates an manager which interacts with the Montezuma's revenge
 
 Usage:
     Montezuma_RL [options] <protocol>
 
 where
-    <protocol> is the name of the Python file describing the parameters of the agent.
+    <protocol> is the name of the Python file describing the parameters of the manager.
     The protocol file is available in protocols/<protocol>.py
     The parameters set in this file can be overwritten by the options below, specified in the command line.
 
@@ -22,14 +22,14 @@ import importlib.util
 
 class Experiment(object):
     """
-    This class makes an experiment and an agent from a protocol
+    This class makes an experiment and an manager from a protocol
     """
 
     def __init__(self, protocol_exp):
-        # the agent and environment's parameters are set in the protocol
+        # the manager and environment's parameters are set in the protocol
         self.parameters = protocol_exp
         self.env = self.get_environment()
-        self.agent = self.get_agent()
+        self.manager = self.get_manager()
 
     def get_environment(self):
         """
@@ -49,26 +49,27 @@ class Experiment(object):
             print("No observation wrapper.")
             return env
 
-    def get_agent(self):
+    def get_manager(self):
         """
-        :return: the agent with parameters specified in the parameters
+        :return: the manager with parameters specified in the parameters
         """
-        print("agent : " + str(self.parameters["agent_name"]))
-        ag = getattr(importlib.import_module("agent." + self.parameters["agent_file"]), self.parameters["agent_name"])
-        return ag(action_space=range(self.env.action_space.n), parameters=self.parameters)
+        print("manager : " + str(self.parameters["manager_name"]))
+        m = getattr(importlib.import_module("manager." + self.parameters["manager_file"]),
+                    self.parameters["manager_name"])
+        return m(action_space=range(self.env.action_space.n), parameters=self.parameters)
 
     def run(self):
-        # loop on the seed to simulate the agent
+        # loop on the seed to simulate the manager
         for seed in self.parameters["seeds"]:
 
-            # first, train the agent
-            self.agent.train_agent(self.env, seed)
+            # first, train the manager
+            self.manager.train(self.env, seed)
 
             # wait for the signal to run the simulation
             input("PRESS ANY KEY")
 
-            # set the simulate environment and test the agent
-            self.agent.simulate_agent(self.env, seed)
+            # set the simulate environment and test the manager
+            self.manager.simulate(self.env, seed)
 
 
 if __name__ == '__main__':
@@ -83,5 +84,5 @@ if __name__ == '__main__':
     # Create an experiment
     experiment = Experiment(parameters)
 
-    # Run the experiment : train and simulate the agent and store the results
+    # Run the experiment : train and simulate the manager and store the results
     experiment.run()
