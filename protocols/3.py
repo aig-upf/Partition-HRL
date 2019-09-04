@@ -1,10 +1,10 @@
-data = {"agent_name": "PlainDQNMontezuma",
-        "agent_file": "agent_plain_dqn",
+data = {"manager_name": "PlainDQNMontezuma",
+        "manager_file": "manager_plain_dqn",
         "display_environment": True,
 
         "seeds": [0],
         "number_episodes": 200,
-        "penalty_lost_life_for_agent": -10,
+        "penalty_lost_life_for_manager": -10,
 
         "memory": 2000,
         "gamma": 0.03,

@@ -1,7 +1,6 @@
-from agent.a2c.models import SharedConvLayers, CriticNetwork, ActorNetwork
+from manager.a2c.models import SharedConvLayers, CriticNetwork, ActorNetwork
 import tensorflow as tf
 import os
-import gridenvs.examples
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
@@ -18,8 +17,8 @@ tf.reset_default_graph()
 shared_conv_layers = SharedConvLayers()
 
 data = {
-        "agent_file": "a2c.agent_a2c",
-        "agent_name": "AgentA2C",
+        "manager_file": "a2c.manager_a2c",
+        "manager_name": "AgentA2C",
         "max_number_actions": 1000,
         "display_environment": True,
 
@@ -41,8 +40,8 @@ data = {
         "ACTOR_NETWORK": ActorNetwork,
 
         # do we need this ?
-        "probability_random_action_agent": 0.1,
-        "probability_random_action_agent_decay": 1/500,
+        "probability_random_action_manager": 0.1,
+        "probability_random_action_manager_decay": 1/500,
         "penalty_death_option": -1,
         "penalty_option_action": -0.2,
         "reward_end_option": 0.1,
@@ -58,11 +57,11 @@ data = {
         "NUMBER_ZONES_GRIDWORLD_Y": 84,
         "NUMBER_ZONES_OPTION_X": 84,
         "NUMBER_ZONES_OPTION_Y": 84,
-        "NUMBER_ZONES_AGENT_X": 6,
-        "NUMBER_ZONES_AGENT_Y": 6,
+        "NUMBER_ZONES_MANAGER_X": 6,
+        "NUMBER_ZONES_MANAGER_Y": 6,
         "THRESH_BINARY_OPTION": 0,
-        "THRESH_BINARY_AGENT": 5
+        "THRESH_BINARY_MANAGER": 5
         }
 
-data.update({"ZONE_SIZE_AGENT_X": data["NUMBER_ZONES_GRIDWORLD_X"] // data["NUMBER_ZONES_AGENT_X"],
-             "ZONE_SIZE_AGENT_Y": data["NUMBER_ZONES_GRIDWORLD_Y"] // data["NUMBER_ZONES_AGENT_Y"]})
+data.update({"ZONE_SIZE_MANAGER_X": data["NUMBER_ZONES_GRIDWORLD_X"] // data["NUMBER_ZONES_MANAGER_X"],
+             "ZONE_SIZE_MANAGER_Y": data["NUMBER_ZONES_GRIDWORLD_Y"] // data["NUMBER_ZONES_MANAGER_Y"]})
