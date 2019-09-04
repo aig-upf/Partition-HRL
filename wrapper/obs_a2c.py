@@ -5,7 +5,7 @@ from wrapper.obs_pixels import ObsPixelWrapper
 class ObservationZoneWrapper(ObsPixelWrapper):
     """
     option : downsample + gray-scale
-    agent : downsample + sample_colors + hash
+    manager : downsample + sample_colors + hash
     """
 
     def __init__(self, env, parameters):
@@ -14,15 +14,15 @@ class ObservationZoneWrapper(ObsPixelWrapper):
 
     def observation(self, observation):
         obs_dict = super().observation(observation)
-        obs_dict["agent"] = hash(ObsPixelWrapper.make_tuple(obs_dict["agent"]))
+        obs_dict["manager"] = hash(ObsPixelWrapper.make_tuple(obs_dict["manager"]))
 
         return obs_dict
 
-    def get_agent_obs(self, image):
-        img_agent = ObsPixelWrapper.make_downsampled_image(image, self.parameters["ZONE_SIZE_AGENT_X"],
-                                                           self.parameters["ZONE_SIZE_AGENT_Y"])
-        img_agent = ObsPixelWrapper.sample_colors(img_agent, self.parameters["THRESH_BINARY_AGENT"])
-        return img_agent
+    def get_manager_obs(self, image):
+        img_manager = ObsPixelWrapper.make_downsampled_image(image, self.parameters["ZONE_SIZE_MANAGER_X"],
+                                                           self.parameters["ZONE_SIZE_MANAGER_Y"])
+        img_manager = ObsPixelWrapper.sample_colors(img_manager, self.parameters["THRESH_BINARY_MANAGER"])
+        return img_manager
 
     @staticmethod
     def make_gray_scale(image):

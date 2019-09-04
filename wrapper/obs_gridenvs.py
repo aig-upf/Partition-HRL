@@ -2,8 +2,8 @@ from wrapper.obs_pixels_stacked_frames import ObsPixelStackedWrapper
 
 
 class ObservationZoneWrapper(ObsPixelStackedWrapper):
-    def get_agent_obs(self, image):
-        img_agent = ObservationZoneWrapper.make_downsampled_image(image, self.parameters["ZONE_SIZE_AGENT_X"],
-                                                                  self.parameters["ZONE_SIZE_AGENT_Y"])
+    def get_manager_obs(self, image):
+        img_manager = ObservationZoneWrapper.make_downsampled_image(image, self.parameters["ZONE_SIZE_MANAGER_X"],
+                                                                    self.parameters["ZONE_SIZE_MANAGER_Y"])
         # sampling colors is often a good idea :(
-        return img_agent
+        return img_manager

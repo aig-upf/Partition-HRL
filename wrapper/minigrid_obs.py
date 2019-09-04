@@ -1,5 +1,6 @@
 from wrapper.obs_pixels_stacked_frames import ObsPixelStackedWrapper
 
+
 class ObservationZoneWrapper(ObsPixelStackedWrapper):
     """
     same observation as ObsPixelStackedWrapper

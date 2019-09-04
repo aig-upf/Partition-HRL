@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 
+
 class ObsPixelStackedWrapper(ObsPixelWrapper):
     def __init__(self, env, parameters):
 
@@ -29,11 +30,11 @@ class ObsPixelStackedWrapper(ObsPixelWrapper):
             plt.show()
             index = index + image_channel_lenght
 
-    def get_agent_obs(self, image):
-        img_agent = ObsPixelWrapper.make_downsampled_image(image, self.parameters["ZONE_SIZE_AGENT_X"],
-                                                           self.parameters["ZONE_SIZE_AGENT_Y"])
-        img_agent = ObsPixelWrapper.sample_colors(img_agent, self.parameters["THRESH_BINARY_AGENT"])
-        return img_agent
+    def get_manager_obs(self, image):
+        img_manager = ObsPixelWrapper.make_downsampled_image(image, self.parameters["ZONE_SIZE_MANAGER_X"],
+                                                           self.parameters["ZONE_SIZE_MANAGER_Y"])
+        img_manager = ObsPixelWrapper.sample_colors(img_manager, self.parameters["THRESH_BINARY_MANAGER"])
+        return img_manager
 
     def get_option_obs(self, image):
         img_option = ObsPixelStackedWrapper.make_gray_scale(image)
