@@ -1,4 +1,4 @@
-from agent.a2c.models import SharedConvLayers, CriticNetwork, ActorNetwork
+from manager.manager.models import SharedConvLayers, CriticNetwork, ActorNetwork
 import tensorflow as tf
 import os
 
@@ -16,7 +16,7 @@ tf.reset_default_graph()
 shared_conv_layers = SharedConvLayers()
 
 data = {
-        "agent_file": "a2c.agent_a2c",
+        "agent_file": "manager.agent_a2c",
         "agent_name": "AgentA2C",
         "max_number_actions": 1000,
         "display_environment": True,

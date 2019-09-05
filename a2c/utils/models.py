@@ -1,7 +1,7 @@
 import tensorflow as tf
 from tensorflow import keras
 import numpy as np
-from agent.a2c.losses import Losses
+from manager.manager.losses import Losses
 import inspect
 
 

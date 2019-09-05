@@ -1,31 +1,28 @@
-from ao.options.options import OptionAbstract
+from mo.options.options import AbstractOption
 import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.optimizers import Adam
 from collections import deque
-from agent.agent import AgentQMontezuma
+from mo.manager.manager import AbstractManager
+from mo.options.options_explore import AbstractOptionExplore
+from mo.policies.policy_manager import AbstractPolicyManager
+from mo.options.options_explore import OptionRandomExplore
 
 
-class AgentDQN(AgentQMontezuma):
+class AgentDQN(AbstractManager):
 
-    def __init__(self, action_space, parameters):
-        super().__init__(action_space, parameters)
-        self.nb_actions = 0
+    def new_explore_option(self) -> AbstractOptionExplore:
+        return OptionRandomExplore(self.action_space)
 
-    def reset(self, initial_state):
-        self.nb_actions = 0
-        super().reset(initial_state)
+    def new_policy(self) -> AbstractPolicyManager:
+        return AbstractPolicyManager()
 
-    def check_end_agent(self, o_r_d_i, current_option, train_episode):
-        self.nb_actions += 1
-        return super().check_end_agent(o_r_d_i, current_option, train_episode) or bool(self.nb_actions > 200)
-
-    def get_option(self) -> OptionAbstract:
-        return OptionDQN(self.action_space, self.parameters, len(self))
+    def new_option(self) -> AbstractOption:
+        return DQNOption(self.action_space, self.parameters, self.get_number_options())
 
 
-class OptionDQN(OptionAbstract):
+class DQNOption(AbstractOption):
 
     def __init__(self, action_space, parameters, index):
         super().__init__(action_space, parameters, index)
@@ -68,38 +65,28 @@ class OptionDQN(OptionAbstract):
         for state, action, reward, next_state, done in minibatch:
             target = reward
             if not done:
-                Q_next = self.model.predict(next_state)[0]
-                target = (reward + self.learning_rate * np.amax(Q_next))
+                q_next = self.model.predict(next_state)[0]
+                target = (reward + self.learning_rate * np.amax(q_next))
 
             target_f = self.model.predict(state)
             target_f[0][action] = target
             # train network
             self.model.fit(state, target_f, epochs=1, verbose=0)
 
-    def update_option(self, o_r_d_i, action, train_episode=None):
-        self.memory.append((self.state, action, o_r_d_i[1], o_r_d_i[0]["option"], o_r_d_i[2]))
-        self.state = np.array([o_r_d_i[0]["option"]])
-
     def reset(self, initial_state, current_state, terminal_state):
-        super().reset_states(initial_state, terminal_state)
         self.state = np.array([current_state])
 
-    def compute_total_score(self, *args, **kwargs):
-        pass
+    def compute_total_score(self, o_r_d_i, action, correct_termination):
+        return self.score + o_r_d_i[1]
 
-    def compute_total_reward(self, o_r_d_i, action, end_option):
-        """
-        test ok
-        :param o_r_d_i:
-        :param action:
-        :param end_option:
-        :return:
-        """
-        total_reward = super().compute_total_reward(o_r_d_i, action, end_option)
-        total_reward += (action != 0) * self.parameters["penalty_option_action"]
-        total_reward += (action == 0) * self.parameters["penalty_option_idle"]
+    def update_option_policy(self, state, total_reward, action, correct_termination, train_episode):
+        self.memory.append((self.state, action, total_reward, state, correct_termination))
+        self.state = np.array([state])
+
+    def compute_total_reward(self, o_r_d_i, correct_termination):
+        total_reward = o_r_d_i[1]
+        total_reward += self.compute_goal_reward(correct_termination)
         total_reward += o_r_d_i[2] * self.parameters["penalty_death_option"]
-
         return total_reward
 
     def get_value(self, state):

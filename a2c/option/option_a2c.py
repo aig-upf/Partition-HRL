@@ -1,78 +1,4 @@
-from ao.options.options import OptionAbstract
-from ao.utils.miscellaneous import obs_equal
-from agent.agent import AgentOptionMontezuma
-from agent.a2c.utils import ExperienceReplay
-from agent.a2c.models import A2CEager
-from policy.policy_tree import QTree
-import numpy as np
-
-class AgentA2C(AgentOptionMontezuma):
-
-    def __init__(self, action_space, parameters):
-        super().__init__(action_space, parameters)
-
-        # this parameter is useful if you want to restart the episode after n actions (200 actions for instance)
-        self.nb_actions = 0
-
-    def reset(self, initial_state):
-        self.nb_actions = 0
-        super().reset(initial_state)
-
-    def check_end_agent(self, o_r_d_i, current_option, train_episode):
-        self.nb_actions += 1
-        # o_r_d_i[-1]['ale.lives'] != 6
-        return  o_r_d_i[2] or bool(self.nb_actions > self.parameters["max_number_actions"]) or \
-            self.policy.end_novelty
-
-    def get_option(self) -> OptionAbstract:
-        return OptionA2C(self.action_space, self.parameters, len(self), )
-
-    def update_agent(self, o_r_d_i, option, train_episode=None):
-        super().update_agent(o_r_d_i, option, train_episode)
-
-    def get_policy(self):
-        return QTree(self.parameters)
-
-    def compute_total_reward(self, o_r_d_i, option_index, train_episode):
-        """
-        todo
-        :param o_r_d_i:
-        :param option_index:
-        :param train_episode:
-        :return:
-        """
-        score_option = self.option_list[option_index].score
-        return score_option
-
-    def get_intra_reward(self, end_option, next_state, current_option, train_episode):
-        """
-        returns a reward based on the maximum value of the next_state over all options
-        (maybe one should select some options instead of using all options).
-        :param end_option: if the option ended or not
-        :param next_state: the next lower level state
-        :param current_option: the current option.
-        :param train_episode:
-        :return: an integer corresponding to the value of the last action:
-        - if end_option is False : 0
-        - if end_option is True : maximum value over all options except the current option of this state
-        """
-        if not (end_option and train_episode and issubclass(type(current_option), OptionAbstract)):
-            return 0
-
-        else:
-            intra_rewards = []
-            for option in self.option_list:
-
-                if option.index < len(self.policy.tree.current_node.children[current_option.index].children):
-                    intra_rewards.append(option.get_value(next_state))
-
-            if intra_rewards:
-                return max(intra_rewards)
-            else:
-                return 0
-
-
-class OptionA2C(OptionAbstract):
+class A2COption(AbstractOption):
 
     idCounter = 0
 
@@ -105,10 +31,10 @@ class OptionA2C(OptionAbstract):
         self.buffer = ExperienceReplay(self.batch_size)
         self.state = None
 
-        self.option_id = OptionA2C.idCounter
-        OptionA2C.idCounter += 1
+        self.option_id = A2COption.idCounter
+        A2COption.idCounter += 1
 
-        print("NUMBER OF OPTIONS DISCOVERED: ", OptionA2C.idCounter)
+        print("NUMBER OF OPTIONS DISCOVERED: ", A2COption.idCounter)
 
     def _get_actor_critic_error(self, batch, train_episode):
 
@@ -187,38 +113,6 @@ class OptionA2C(OptionAbstract):
         self.state = np.array([current_state])
         # self.buffer.reset_buffer()
         self.score = 0
-
-    def compute_total_score(self, o_r_d_i, action, end_option, train_episode):
-        if o_r_d_i[1] > 0:
-            return o_r_d_i[1]
-        else:
-            return 0
-
-    def compute_total_reward(self, o_r_d_i, action, intra_reward, end_option):
-        """
-        test ok
-        :param o_r_d_i:
-        :param action:
-        :param intra_reward:
-        :param end_option:
-        :return:
-        """
-        total_reward = o_r_d_i[1]  # todo: + intra_reward
-
-        if end_option:
-            total_reward += int(obs_equal(self.terminal_state, o_r_d_i[0]["agent"])) * \
-                            self.parameters["reward_end_option"]
-            
-            total_reward += int(not obs_equal(self.terminal_state, o_r_d_i[0]["agent"])) * \
-                self.parameters["penalty_end_option"]
-
-        total_reward += self.parameters["penalty_option_action"]
-
-        if end_option:
-
-            print(hash(self.initial_state.data.tobytes()), self.option_id, hash(self.terminal_state.data.tobytes()))
-
-        return total_reward
 
     def get_value(self, state):
 

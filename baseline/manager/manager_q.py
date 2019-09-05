@@ -1,11 +1,11 @@
-from ao.examples.agent_example import AgentOptionMontezuma
-from ao.examples.options_examples import OptionQArray
-from ao.options.options import OptionAbstract
-from ao.examples.policy_examples_agent import QGraph
+from mo.manager.manager import AbstractManager
+from mo.examples.options_examples import OptionQArray
+from mo.options.options import AbstractOption
+from mo.examples.policy_examples_manager import QGraph
 import numpy as np
 
 
-class AgentQMontezuma(AgentOptionMontezuma):
+class AgentQMontezuma(AbstractManager):
 
     def compute_total_reward(self, o_r_d_i, option_index, train_episode):
         """
@@ -23,10 +23,10 @@ class AgentQMontezuma(AgentOptionMontezuma):
     def check_end_agent(self, o_r_d_i, current_option, train_episode):
         return o_r_d_i[-1]['ale.lives'] != 6
 
-    def get_option(self) -> OptionAbstract:
-        return Option(self.action_space, self.parameters, len(self))
+    def new_option(self) -> AbstractOption:
+        return Option(self.action_space, self.parameters, self.get_number_options())
 
-    def get_policy(self):
+    def new_policy(self):
         return Policy(self.parameters)
 
 
