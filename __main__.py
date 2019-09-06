@@ -16,6 +16,7 @@ Options:
 """
 
 import gym
+import gridenvs.examples  # todo fix this, this should be imported by default !
 from docopt import docopt
 import importlib.util
 
@@ -54,7 +55,7 @@ class Experiment(object):
         :return: the manager with parameters specified in the parameters
         """
         print("manager : " + str(self.parameters["manager_name"]))
-        m = getattr(importlib.import_module("manager." + self.parameters["manager_file"]),
+        m = getattr(importlib.import_module(self.parameters["manager_file"]),
                     self.parameters["manager_name"])
         return m(action_space=range(self.env.action_space.n), parameters=self.parameters)
 
@@ -66,7 +67,7 @@ class Experiment(object):
             self.manager.train(self.env, seed)
 
             # wait for the signal to run the simulation
-            input("PRESS ANY KEY")
+            input("Learning phase: Done. Press any key to run the simulation")
 
             # set the simulate environment and test the manager
             self.manager.simulate(self.env, seed)

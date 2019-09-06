@@ -31,10 +31,6 @@ class ObsPixelWrapper(gym.ObservationWrapper):
         return observation
 
     @staticmethod
-    def make_tuple(image):
-        return tuple(tuple(tuple(color) for color in lig) for lig in image)
-
-    @staticmethod
     def sample_colors(image, threshold):
         img = cv2.medianBlur(image, 1)
         _, img = cv2.threshold(img, threshold, 255, cv2.THRESH_BINARY)

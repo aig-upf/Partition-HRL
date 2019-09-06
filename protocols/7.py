@@ -1,4 +1,4 @@
-from manager.manager.models import SharedConvLayers, CriticNetwork, ActorNetwork
+from a2c.utils.models import SharedConvLayers, CriticNetwork, ActorNetwork
 import tensorflow as tf
 import os
 
@@ -17,8 +17,8 @@ tf.reset_default_graph()
 shared_conv_layers = SharedConvLayers()
 
 data = {
-        "manager_file": "manager.manager_a2c",
-        "manager_name": "AgentA2C",
+        "manager_file": "a2c.manager.manager_a2c",
+        "manager_name": "ManagerA2C",
         "max_number_actions": 1000,
         "display_environment": True,
 

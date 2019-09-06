@@ -1,6 +1,10 @@
-class A2COption(AbstractOption):
+import numpy as np
+from mo.options.options import AbstractOption
+from a2c.utils.models import A2CEager
+from a2c.utils.utils import ExperienceReplay
 
-    idCounter = 0
+
+class A2COption(AbstractOption):
 
     def __init__(self, action_space, parameters, index):
         super().__init__(action_space, parameters, index)
@@ -31,10 +35,7 @@ class A2COption(AbstractOption):
         self.buffer = ExperienceReplay(self.batch_size)
         self.state = None
 
-        self.option_id = A2COption.idCounter
-        A2COption.idCounter += 1
-
-        print("NUMBER OF OPTIONS DISCOVERED: ", A2COption.idCounter)
+        print("NUMBER OF OPTIONS DISCOVERED: ", self.index)
 
     def _get_actor_critic_error(self, batch, train_episode):
 
@@ -64,7 +65,33 @@ class A2COption(AbstractOption):
         y_critic, adv_actor = self._returns_advantages(rewards, dones, p, p_, train_episode)
         y_critic = np.expand_dims(y_critic, axis=-1)
 
-        #print(self.option_id, y_critic, rewards, adv_actor, dones)
+        """
+        @Lorenzo:
+        what about this ?
+
+        for i in range(len(batch)):
+            o = batch[i][1]
+            a = o[1]
+            r = o[2]
+            s_ = o[3]
+
+            a_index = self.action_space.index(a)
+
+            if s_ is None:
+                dones[i] = 1
+                p_ = [0]
+                
+            rewards[i] = r
+            a_one_hot[i][a_index] = 1
+
+        assert s_ is not None "batch is not correctly updated"
+        p_ = self.main_model_nn.prediction_critic([s_])[0]
+        
+        y_critic, adv_actor = self._returns_advantages(rewards, dones, p, p_, train_episode)
+        y_critic = np.expand_dims(y_critic, axis=-1)
+        """
+
+        # print(self.option_id, y_critic, rewards, adv_actor, dones)
 
         return states_t, adv_actor, a_one_hot, y_critic
 
@@ -81,9 +108,7 @@ class A2COption(AbstractOption):
         return returns, advantages
 
     def act(self, train_episode):
-
         predict = self.main_model_nn.prediction_actor(self.state)[0]
-
         return np.random.choice(self.action_space, p=predict)
 
     def replay(self, train_episode):
@@ -97,40 +122,14 @@ class A2COption(AbstractOption):
 
             self.buffer.reset_buffer()
 
-    def update_parameters(self, o_r_d_i, intra_reward, total_reward, action, end_option, train_episode):
-        r = self.compute_total_reward(o_r_d_i, action, intra_reward, end_option)
-
-        if train_episode:
-
-            self.buffer.add((self.state[0], action, r, o_r_d_i[0]["option"], o_r_d_i[2]))
-
-        self.state = np.array([o_r_d_i[0]["option"]])
-        self.replay(train_episode)
-
-    def reset(self, initial_state, current_state, terminal_state):
-
-        super().reset_states(initial_state , terminal_state)
-        self.state = np.array([current_state])
+    def reset(self, state):
+        self.state = np.array([state])
         # self.buffer.reset_buffer()
         self.score = 0
 
     def get_value(self, state):
-
         value = self.main_model_nn.prediction_critic([state])
         return value[0][0]
-
-    def check_end_option(self, new_state):
-        """
-        Checks if the option has terminated or not.
-        The new_state must be *of the same form* as the initial_state (transformed or not).
-        :param new_state:
-        :return: True if the new_state is different from the initial state
-        """
-        end_option = not obs_equal(new_state, self.initial_state)
-        if end_option:
-            self.activated = False
-
-        return end_option
 
     def compute_current_gamma(self, train_episode):
         if self.parameters["EVOLUTION"] == "linear":
@@ -142,3 +141,18 @@ class A2COption(AbstractOption):
 
         else:
             raise NotImplementedError("Evolution of Gamma not implemented")
+
+    def compute_total_reward(self, o_r_d_i, correct_termination):
+        total_reward = o_r_d_i[1]
+        total_reward += self.compute_goal_reward(correct_termination)
+        return total_reward
+
+    def update_option(self, o_r_d_i, action, correct_termination, train_episode=None):
+        self.score += o_r_d_i[1]
+
+        if train_episode:
+            total_reward = self.compute_total_reward(o_r_d_i, correct_termination)
+            self.buffer.add((self.state[0], action, total_reward, o_r_d_i[0]["option"], o_r_d_i[2]))
+
+        self.state = np.array([o_r_d_i[0]["option"]])
+        self.replay(train_episode)
