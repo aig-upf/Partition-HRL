@@ -39,9 +39,10 @@ data = {
         "CRITIC_NETWORK": CriticNetwork,
         "ACTOR_NETWORK": ActorNetwork,
 
-        # do we need this ?
+        # policy manager
+        "edge_cost": -0.01,
+        "max_explore": 10,
         "probability_random_action_manager": 0.1,
-        "probability_random_action_manager_decay": 1/500,
         "penalty_death_option": -1,
         "penalty_option_action": -0.2,
         "reward_end_option": 0.1,
