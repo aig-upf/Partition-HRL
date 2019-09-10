@@ -34,6 +34,7 @@ class A2COption(AbstractOption):
         self.weight_ce_exploration = self.parameters["WEIGHT_CE_EXPLORATION"]
         self.buffer = ExperienceReplay(self.batch_size)
         self.state = None
+        self.number_of_lives = None
 
         print("NUMBER OF OPTIONS DISCOVERED: ", self.index)
 
@@ -142,17 +143,36 @@ class A2COption(AbstractOption):
         else:
             raise NotImplementedError("Evolution of Gamma not implemented")
 
-    def compute_total_reward(self, o_r_d_i, correct_termination):
+    def compute_total_reward(self, o_r_d_i, correct_termination, next_option_critic):
         total_reward = o_r_d_i[1]
         total_reward += self.compute_goal_reward(correct_termination)
+        total_reward += self.lost_life(o_r_d_i[3])
+        if next_option_critic is not None:
+            total_reward += next_option_critic
+
         return total_reward
 
-    def update_option(self, o_r_d_i, action, correct_termination, train_episode=None):
+    def update_option(self, o_r_d_i, action, correct_termination, next_option_critic=None, train_episode=None):
         self.score += o_r_d_i[1]
 
         if train_episode:
-            total_reward = self.compute_total_reward(o_r_d_i, correct_termination)
+            total_reward = self.compute_total_reward(o_r_d_i, correct_termination, next_option_critic)
             self.buffer.add((self.state[0], action, total_reward, o_r_d_i[0]["option"], o_r_d_i[2]))
 
         self.state = np.array([o_r_d_i[0]["option"]])
         self.replay(train_episode)
+
+    def lost_life(self, info):
+        """
+        only for Montezuma : give the agent a penalty when it dies.
+        :param info:
+        :return:
+        """
+        if self.parameters["env_name"] == "MontezumaRevenge-v0":
+            lost_life = self.number_of_lives != info["ale.lives"]
+            self.number_of_lives = info["ale.lives"]
+
+            return self.parameters["penalty_death_option"] if lost_life else 0
+
+        else:
+            return 0

@@ -43,8 +43,6 @@ data = {
         "edge_cost": -0.01,
         "max_explore": 10,
         "probability_random_action_manager": 0.1,
-        "penalty_death_option": -1,
-        "penalty_option_action": -0.2,
         "reward_end_option": 0.1,
         "penalty_end_option": -0.1,
 
