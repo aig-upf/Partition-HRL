@@ -64,33 +64,10 @@ class A2COption(AbstractOption):
             a_one_hot[i][a_index] = 1
 
         y_critic, adv_actor = self._returns_advantages(rewards, dones, p, p_, train_episode)
+
+        print(y_critic)
+
         y_critic = np.expand_dims(y_critic, axis=-1)
-
-        """
-        @Lorenzo:
-        what about this ?
-
-        for i in range(len(batch)):
-            o = batch[i][1]
-            a = o[1]
-            r = o[2]
-            s_ = o[3]
-
-            a_index = self.action_space.index(a)
-
-            if s_ is None:
-                dones[i] = 1
-                p_ = [0]
-                
-            rewards[i] = r
-            a_one_hot[i][a_index] = 1
-
-        assert s_ is not None "batch is not correctly updated"
-        p_ = self.main_model_nn.prediction_critic([s_])[0]
-        
-        y_critic, adv_actor = self._returns_advantages(rewards, dones, p, p_, train_episode)
-        y_critic = np.expand_dims(y_critic, axis=-1)
-        """
 
         # print(self.option_id, y_critic, rewards, adv_actor, dones)
 
@@ -128,7 +105,8 @@ class A2COption(AbstractOption):
         # self.buffer.reset_buffer()
         self.score = 0
 
-    def get_value(self, state):
+    def get_critic_value(self, state):
+        # get value of a state from the critic
         value = self.main_model_nn.prediction_critic([state])
         return value[0][0]
 
