@@ -24,7 +24,7 @@ data = {
         "episodes_performances": 100,
 
         "seeds": [3],
-        "number_episodes": 1000,
+        "number_episodes": 2500,
 
         "learning_rate": 0.001,
 
