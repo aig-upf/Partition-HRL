@@ -21,9 +21,10 @@ data = {
         "manager_name": "ManagerA2C",
         "max_number_actions": 1000,
         "display_environment": True,
+        "episodes_performances": 100,
 
         "seeds": [3],
-        "number_episodes": 100000,
+        "number_episodes": 1000,
 
         "learning_rate": 0.001,
 

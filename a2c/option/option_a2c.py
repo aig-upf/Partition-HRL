@@ -121,20 +121,18 @@ class A2COption(AbstractOption):
         else:
             raise NotImplementedError("Evolution of Gamma not implemented")
 
-    def compute_total_reward(self, o_r_d_i, correct_termination, next_option_critic):
+    def compute_total_reward(self, o_r_d_i, correct_termination):
         total_reward = o_r_d_i[1]
         total_reward += self.compute_goal_reward(correct_termination)
         total_reward += self.lost_life(o_r_d_i[3])
-        if next_option_critic is not None:
-            total_reward += next_option_critic
 
         return total_reward
 
-    def update_option(self, o_r_d_i, action, correct_termination, next_option_critic=None, train_episode=None):
+    def update_option(self, o_r_d_i, action, correct_termination, train_episode=None):
         self.score += o_r_d_i[1]
 
         if train_episode:
-            total_reward = self.compute_total_reward(o_r_d_i, correct_termination, next_option_critic)
+            total_reward = self.compute_total_reward(o_r_d_i, correct_termination)
             self.buffer.add((self.state[0], action, total_reward, o_r_d_i[0]["option"], o_r_d_i[2]))
 
         self.state = np.array([o_r_d_i[0]["option"]])
