@@ -16,7 +16,7 @@ All the protocol parameters are stored in protocols/p.py.
 
 # How does it work ?
 
-These classes use the library (manager_option_library)[git@github.com:DamienAllonsius/manager_option_library.git] to create agents and options (see an example in folder a2c).
+These classes use the library [manager_option_library](https://github.com/DamienAllonsius/manager_option_library) to create agents and options (see an example in folder a2c).
 
 Your agents have to inherit from AbstractManager (see mo/manager/manager.py file) and your options from classes in folder mo/options. You need also a special option for exploring the environment as well (same folder).
 
