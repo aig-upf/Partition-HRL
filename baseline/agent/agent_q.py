@@ -1,6 +1,5 @@
 import numpy as np
 from baseline.agent.agent import AbstractAgent
-from mo.policies.policy_option import PolicyOptionQArray
 
 
 class PlainQLearning(AbstractAgent):

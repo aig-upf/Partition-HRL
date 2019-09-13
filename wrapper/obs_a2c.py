@@ -1,5 +1,6 @@
 import cv2
-from wrapper.obs_pixels import ObsPixelWrapper
+from mo.utils.observation_wrapper import ObsPixelWrapper
+from mo.utils.miscellaneous import make_tuple
 
 
 class ObservationZoneWrapper(ObsPixelWrapper):
@@ -14,7 +15,7 @@ class ObservationZoneWrapper(ObsPixelWrapper):
 
     def observation(self, observation):
         obs_dict = super().observation(observation)
-        obs_dict["manager"] = hash(ObsPixelWrapper.make_tuple(obs_dict["manager"]))
+        obs_dict["manager"] = hash(make_tuple(obs_dict["manager"]))
 
         return obs_dict
 
