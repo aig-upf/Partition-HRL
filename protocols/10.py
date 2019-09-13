@@ -15,14 +15,14 @@ data = {"display_environment": True,
         "reward_end_option": 0.1,
         "penalty_end_option": -0.1,
         # parameters for environment's observations (manager and option)
-        "env_name": "MiniGrid-MultiRoom-N2-S4-v0",
+        "env_name": "MiniGrid-Empty-5x5-v0",
         "obs_wrapper_name": "minigrid_obs",
         "stack_images_length": 4,
-        "NUMBER_ZONES_GRIDWORLD_X": 608,
-        "NUMBER_ZONES_GRIDWORLD_Y": 608,
-        "NUMBER_ZONES_MANAGER_X": int(608 / 32),
-        "NUMBER_ZONES_MANAGER_Y": int(608 / 32),
-        "THRESH_BINARY_MANAGER": 40
+        "NUMBER_ZONES_GRIDWORLD_X": 160,
+        "NUMBER_ZONES_GRIDWORLD_Y": 160,
+        "NUMBER_ZONES_MANAGER_X": 5,
+        "NUMBER_ZONES_MANAGER_Y": 5,
+        "THRESH_BINARY_MANAGER": 58
         }
 
 data.update(

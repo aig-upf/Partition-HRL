@@ -1,7 +1,7 @@
 from a2c.option.option_a2c import A2COption
 from mo.options.options_explore import OptionRandomExplore
 from mo.manager.manager import AbstractManager
-from mo.policies.policy_manager import GraphPlanningPolicyManager
+from baseline.policy.graph_planning import GraphPlanningPolicyManager
 
 
 class ManagerA2C(AbstractManager):
