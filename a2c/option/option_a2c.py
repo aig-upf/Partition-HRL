@@ -2,6 +2,7 @@ import numpy as np
 from mo.options.options import AbstractOption
 from a2c.utils.models import A2CEager
 from a2c.utils.utils import ExperienceReplay
+import time
 
 
 class A2COption(AbstractOption):
@@ -51,10 +52,11 @@ class A2COption(AbstractOption):
             a = o[1]
             r = o[2]
             s_ = o[3]
+            termination = o[4] # Termination of the option, can be None when the option is on going, True when it finish correctly or False when it Finish in a wrong state
 
             a_index = self.action_space.index(a)
 
-            if s_ is None:
+            if termination is not None:
                 dones[i] = 1
                 p_ = [0]
             elif i == len(batch)-1:
@@ -65,7 +67,9 @@ class A2COption(AbstractOption):
 
         y_critic, adv_actor = self._returns_advantages(rewards, dones, p, p_, train_episode)
 
+        print(dones)
         print(y_critic)
+        print(rewards)
 
         y_critic = np.expand_dims(y_critic, axis=-1)
 
@@ -101,7 +105,9 @@ class A2COption(AbstractOption):
             self.buffer.reset_buffer()
 
     def reset(self, state):
+
         self.state = np.array([state])
+
         # self.buffer.reset_buffer()
         self.score = 0
 
@@ -133,7 +139,8 @@ class A2COption(AbstractOption):
 
         if train_episode:
             total_reward = self.compute_total_reward(o_r_d_i, correct_termination)
-            self.buffer.add((self.state[0], action, total_reward, o_r_d_i[0]["option"], o_r_d_i[2]))
+            print(self.index, " - ", total_reward)
+            self.buffer.add((self.state[0], action, total_reward, o_r_d_i[0]["option"], correct_termination))   # now using correct_termination [ True, None, False]
 
         self.state = np.array([o_r_d_i[0]["option"]])
         self.replay(train_episode)

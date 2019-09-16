@@ -21,14 +21,14 @@ data = {
         "manager_name": "ManagerA2C",
         "max_number_actions": 1000,
         "display_environment": True,
-        "episodes_performances": 100,
+        "episodes_performances": 1000,
 
         "seeds": [3],
-        "number_episodes": 2500,
+        "number_episodes": 10000,
 
         "learning_rate": 0.001,
 
-        # please check the values below
+        # Policy Options
         "DEVICE": 'cpu:0',
         "GAMMA_MAX": 0.99,
         "GAMMA_MIN": 0.1,
@@ -39,13 +39,13 @@ data = {
         "SHARED_CONVOLUTION_LAYERS": shared_conv_layers,
         "CRITIC_NETWORK": CriticNetwork,
         "ACTOR_NETWORK": ActorNetwork,
+        "reward_end_option": 0.6,
+        "penalty_end_option": -0.6,
 
         # policy manager
         "edge_cost": -0.01,
         "max_explore": 10,
         "probability_random_action_manager": 0.1,
-        "reward_end_option": 0.1,
-        "penalty_end_option": -0.1,
 
         # environment's parameters
         "env_name": "GE_MazeKeyDoor-v0",
