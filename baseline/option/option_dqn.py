@@ -1,28 +1,18 @@
 from mo.options.options import AbstractOption
-import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.optimizers import Adam
 from collections import deque
-from mo.manager.manager import AbstractManager
-from mo.options.options_explore import AbstractOptionExplore
-from mo.policies.policy_manager import AbstractPolicyManager
-from mo.options.options_explore import OptionRandomExplore
-
-
-class AgentDQN(AbstractManager):
-
-    def new_explore_option(self) -> AbstractOptionExplore:
-        return OptionRandomExplore(self.action_space)
-
-    def new_policy(self) -> AbstractPolicyManager:
-        return AbstractPolicyManager()
-
-    def new_option(self) -> AbstractOption:
-        return DQNOption(self.action_space, self.parameters, self.get_number_options())
+import numpy as np
 
 
 class DQNOption(AbstractOption):
+    """
+    todo refactor this -> this class is not maintained
+    """
+
+    def update_option(self, o_r_d_i, action, correct_termination, train_episode=None):
+        pass
 
     def __init__(self, action_space, parameters, index):
         super().__init__(action_space, parameters, index)
@@ -73,7 +63,7 @@ class DQNOption(AbstractOption):
             # train network
             self.model.fit(state, target_f, epochs=1, verbose=0)
 
-    def reset(self, initial_state, current_state, terminal_state):
+    def reset(self, current_state):
         self.state = np.array([current_state])
 
     def compute_total_score(self, o_r_d_i, action, correct_termination):

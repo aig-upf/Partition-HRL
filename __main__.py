@@ -16,7 +16,9 @@ Options:
 """
 
 import gym
-import gridenvs.examples  # todo fix this, this should be imported by default !
+import gridenvs.examples
+import gym_minigrid
+
 from docopt import docopt
 import importlib.util
 

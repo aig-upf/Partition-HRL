@@ -20,14 +20,15 @@ data = {
         "manager_file": "a2c.manager.manager_a2c",
         "manager_name": "ManagerA2C",
         "max_number_actions": 1000,
-
-        "display_environment": False,
+        "display_environment": True,
         "episodes_performances": 100,
+
         "seeds": [3],
-        "number_episodes": 5000,
+        "number_episodes": 2500,
+
         "learning_rate": 0.001,
 
-        # Policy Options
+        # please check the values below
         "DEVICE": 'cpu:0',
         "GAMMA_MAX": 0.99,
         "GAMMA_MIN": 0.1,
@@ -38,16 +39,16 @@ data = {
         "SHARED_CONVOLUTION_LAYERS": shared_conv_layers,
         "CRITIC_NETWORK": CriticNetwork,
         "ACTOR_NETWORK": ActorNetwork,
-        "reward_end_option": 0.6,
-        "penalty_end_option": -0.6,
 
         # policy manager
         "edge_cost": -0.01,
         "max_explore": 10,
         "probability_random_action_manager": 0.1,
+        "reward_end_option": 0.1,
+        "penalty_end_option": -0.1,
 
         # environment's parameters
-        "env_name": "GE_MazeKeyDoor-v0",
+        "env_name": "GE_MazeKeyDoor-v2",
         "obs_wrapper_name": "obs_pixels_stacked_frames",
         "stack_images_length": 4,
         "OPTION_OBSERVATION_IMAGE_WIDTH": None,
@@ -56,10 +57,10 @@ data = {
         "NUMBER_ZONES_GRIDWORLD_Y": 84,
         "NUMBER_ZONES_OPTION_X": 84,
         "NUMBER_ZONES_OPTION_Y": 84,
-        "NUMBER_ZONES_MANAGER_X": 6,
-        "NUMBER_ZONES_MANAGER_Y": 6,
+        "NUMBER_ZONES_MANAGER_X": 12,
+        "NUMBER_ZONES_MANAGER_Y": 12,
         "THRESH_BINARY_OPTION": 0,
-        "THRESH_BINARY_MANAGER": 5
+        "THRESH_BINARY_MANAGER": 0
         }
 
 data.update({"ZONE_SIZE_MANAGER_X": data["NUMBER_ZONES_GRIDWORLD_X"] // data["NUMBER_ZONES_MANAGER_X"],
