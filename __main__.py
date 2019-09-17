@@ -21,6 +21,9 @@ import gym_minigrid
 
 from docopt import docopt
 import importlib.util
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
 
 
 class Experiment(object):
@@ -31,6 +34,7 @@ class Experiment(object):
     def __init__(self, protocol_exp):
         # the manager and environment's parameters are set in the protocol
         self.parameters = protocol_exp
+        self.results_paths = []
         self.env = self.get_environment()
         self.manager = self.get_manager()
 
@@ -66,13 +70,44 @@ class Experiment(object):
         for seed in self.parameters["seeds"]:
 
             # first, train the manager
-            self.manager.train(self.env, seed)
+            self.manager.reset_all()
+            self.manager.train(self.env, self.parameters, seed)
+            self.results_paths.append(self.manager.get_result_paths())
 
-            # wait for the signal to run the simulation
-            input("Learning phase: Done. Press any key to run the simulation")
+        print("Learning phase: Done.")
+        # wait for the signal to run the simulation
+        # input("Learning phase: Done. Press any key to run the simulation")
 
-            # set the simulate environment and test the manager
-            self.manager.simulate(self.env, seed)
+        # set the simulate environment and test the manager
+        # self.manager.simulate(self.env, seed)
+
+    def plot(self, plot_type, title, xlabel, ylabel):
+
+        list_results = [np.array(pd.read_csv(p[plot_type], header=None)) for p in self.results_paths]
+        results_length = [len(result) for result in list_results]
+        min_length = min(results_length)
+
+        if len(set(results_length)) != 1:
+            # arrays have different size
+            # slice arrays
+            list_results = [a[:min_length] for a in list_results]
+
+        st = np.hstack(list_results)
+
+        x = range(min_length)
+        y_mean = np.mean(st, axis=-1)
+        y_max = np.max(st, axis=-1)
+        y_min = np.min(st, axis=-1)
+
+        plt.title(title)
+        plt.xlabel(xlabel)
+        plt.ylabel(ylabel)
+
+        plt.plot(x, y_mean, color='#CC4F1B')
+        plt.fill_between(x, y_mean - y_min, y_mean + y_max, alpha=0.5, edgecolor='#CC4F1B', facecolor='#FF9848')
+        plt.savefig(self.manager.get_result_folder() + "/" + plot_type)
+
+        plt.close()
 
 
 if __name__ == '__main__':
@@ -89,3 +124,8 @@ if __name__ == '__main__':
 
     # Run the experiment : train and simulate the manager and store the results
     experiment.run()
+
+    # Plot results
+    experiment.plot("manager", title="manager's score", xlabel="epochs", ylabel="total reward in epochs")
+    experiment.plot("transitions", title="success rate of options' transitions", xlabel="number of options executed",
+                    ylabel="% of successful option executions")
