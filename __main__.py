@@ -104,7 +104,7 @@ class Experiment(object):
         plt.ylabel(ylabel)
 
         plt.plot(x, y_mean, color='#CC4F1B')
-        plt.fill_between(x, y_mean - y_min, y_mean + y_max, alpha=0.5, edgecolor='#CC4F1B', facecolor='#FF9848')
+        plt.fill_between(x, y_min, y_max, alpha=0.5, edgecolor='#CC4F1B', facecolor='#FF9848')
         plt.savefig(self.manager.get_result_folder() + "/" + plot_type)
 
         plt.close()
