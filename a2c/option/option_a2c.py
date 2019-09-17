@@ -37,7 +37,8 @@ class A2COption(AbstractOption):
         self.state = None
         self.number_of_lives = None
 
-        print("NUMBER OF OPTIONS DISCOVERED: ", self.index)
+        print("HASHED WEIGHTS OF OBSERVATION", hash(str(self.parameters["SHARED_CONVOLUTION_LAYERS"].get_weights())))
+        print("NUMBER OF OPTIONS AGENTS CREATED: ", self.index)
 
     def _get_actor_critic_error(self, batch, train_episode):
 
@@ -66,10 +67,6 @@ class A2COption(AbstractOption):
             a_one_hot[i][a_index] = 1
 
         y_critic, adv_actor = self._returns_advantages(rewards, dones, p, p_, train_episode)
-
-        print(dones)
-        print(y_critic)
-        print(rewards)
 
         y_critic = np.expand_dims(y_critic, axis=-1)
 
@@ -139,7 +136,6 @@ class A2COption(AbstractOption):
 
         if train_episode:
             total_reward = self.compute_total_reward(o_r_d_i, correct_termination)
-            print(self.index, " - ", total_reward)
             self.buffer.add((self.state[0], action, total_reward, o_r_d_i[0]["option"], correct_termination))   # now using correct_termination [ True, None, False]
 
         self.state = np.array([o_r_d_i[0]["option"]])

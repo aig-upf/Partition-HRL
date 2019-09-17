@@ -30,6 +30,10 @@ class SharedConvLayers(keras.Model):
 
         return [x] # super importante ricordati che negli actor e critic modelli stai indicizzando a 0 ho bisogno di questo per la vae observation
 
+    def reset(self):
+        SharedConvLayers.idCounter = 0
+        self.__init__()
+
 
 class SharedDenseLayers(keras.Model):
     def __init__(self):
@@ -61,6 +65,10 @@ class CriticNetwork(keras.Model):
         x = self.out(x)
         return x
 
+    def reset(self):
+        CriticNetwork.idCounter = 0
+        self.__init__()
+
 
 class ActorNetwork(keras.Model):
 
@@ -79,6 +87,10 @@ class ActorNetwork(keras.Model):
         x = self.dense1(x)
         x = self.out(x)
         return x
+
+    def reset(self):
+        ActorNetwork.idCounter = 0
+        self.__init__()
 
 
 class ActorCriticNetwork(keras.Model):
@@ -105,6 +117,10 @@ class ActorCriticNetwork(keras.Model):
         critic = self.critic_model(x)
 
         return actor, critic
+
+    def reset(self):
+        ActorCriticNetwork.idCounter = 0
+        self.__init__()
 
 
 class A2CEager:
@@ -205,3 +221,6 @@ class A2CEager:
                                                    self.global_step)
 
         return [None, None]
+
+    def reset(self):
+        self.__init__()
