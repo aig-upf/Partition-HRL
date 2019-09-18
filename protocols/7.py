@@ -20,10 +20,10 @@ data = {
         "manager_file": "a2c.manager.manager_a2c",
         "manager_name": "ManagerA2CPseudoCount",
         "max_number_actions": 1000,
-        "display_environment": False,
+        "display_environment": True,
         "episodes_performances": 100,
         "seeds": [3, 4],
-        "number_episodes": 3000,
+        "number_episodes": 1000,
         "learning_rate": 0.001,
 
         # Policy Options
