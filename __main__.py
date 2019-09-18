@@ -21,7 +21,11 @@ import gym_minigrid
 
 from docopt import docopt
 import importlib.util
-import matplotlib.pyplot as plt
+import os
+import matplotlib
+if os.environ.get('DISPLAY','') == '':
+    print('no display found. Using non-interactive Agg backend')
+    matplotlib.use('Agg')
 import pandas as pd
 import numpy as np
 

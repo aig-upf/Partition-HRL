@@ -1,3 +1,4 @@
+core
 venv
 RL_venv/
 *~
@@ -8,3 +9,5 @@ src/
 results/
 metrics/
 backup_draw.py
+cluster_utils/RL-cluster-venv/
+cluster_utils/jobs/
