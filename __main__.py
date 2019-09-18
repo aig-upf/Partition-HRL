@@ -22,12 +22,15 @@ import gym_minigrid
 from docopt import docopt
 import importlib.util
 import os
+import pandas as pd
+import numpy as np
+
 import matplotlib
 if os.environ.get('DISPLAY','') == '':
     print('no display found. Using non-interactive Agg backend')
     matplotlib.use('Agg')
-import pandas as pd
-import numpy as np
+
+import matplotlib.pyplot as plt
 
 
 class Experiment(object):
@@ -86,22 +89,29 @@ class Experiment(object):
         # self.manager.simulate(self.env, seed)
 
     def plot(self, plot_type, title, xlabel, ylabel):
+        list_results_x = []
+        list_results_y = []
 
-        list_results = [np.array(pd.read_csv(p[plot_type], header=None)) for p in self.results_paths]
-        results_length = [len(result) for result in list_results]
-        min_length = min(results_length)
+        for p in self.results_paths:
+            x, y = list(), list()
+            with open(p[plot_type]) as f:
+                for line in f:
+                    x.append(float(line.split()[0]))
+                    y.append(float(line.split()[1]))
 
-        if len(set(results_length)) != 1:
-            # arrays have different size
-            # slice arrays
-            list_results = [a[:min_length] for a in list_results]
+            list_results_x.append(x)
+            list_results_y.append(y)
 
-        st = np.hstack(list_results)
+        min_length = min([len(result) for result in list_results_x])
 
-        x = range(min_length)
-        y_mean = np.mean(st, axis=-1)
-        y_max = np.max(st, axis=-1)
-        y_min = np.min(st, axis=-1)
+        x = list_results_x[0][:min_length]
+
+        list_results_y = [a[:min_length] for a in list_results_y]
+        st = np.vstack(list_results_y)
+
+        y_mean = np.mean(st, axis=0)
+        y_max = np.max(st, axis=0)
+        y_min = np.min(st, axis=0)
 
         plt.title(title)
         plt.xlabel(xlabel)

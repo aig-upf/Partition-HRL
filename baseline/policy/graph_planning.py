@@ -108,7 +108,6 @@ class GraphPlanningPolicyManager(AbstractPolicyManager):
 
     def find_best_action(self, train_episode=None, verbose=False):
         verbose = False
-        print(self.number_explorations)
         if self.current_state_index is None or not self.transitions[self.current_state_index]:
             return None  # explore
 
@@ -126,8 +125,8 @@ class GraphPlanningPolicyManager(AbstractPolicyManager):
                 # then explore this state
                 self.current_path.append(None)
                 self.number_explorations[state_idx_to_explore] += 1
-                print(red + "explore" + white)
                 if verbose:
+                    print(red + "explore" + white)
                     print(self)
                     print("target state to explore " + str(state_idx_to_explore))
                     print("new_path " + str(self.current_path))
