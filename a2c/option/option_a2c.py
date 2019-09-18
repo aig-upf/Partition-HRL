@@ -130,7 +130,7 @@ class A2COption(AbstractOption):
 
         return total_reward
 
-    def update_option(self, o_r_d_i, action, correct_termination, intra_reward=0, train_episode=None):
+    def update_option(self, o_r_d_i, action, correct_termination, train_episode=None, intra_reward=0):
         self.score += o_r_d_i[1]
 
         if train_episode:

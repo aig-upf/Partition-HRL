@@ -87,7 +87,7 @@ class ManagerA2CPCIntraRewards(AbstractManager):
                 if check_type(current_option, AbstractOption):
                     # record the correct transition when the option is a regular option (i.e. not an explore option)
                     self.successful_transition.append(correct_termination)
-                    self.write_success_rate_transitions()
+                    self.write_success_rate_transitions(train_episode)
 
                 # the manager does not need to know if the correct_termination is 0 or 1.
                 self.update_manager(o_r_d_i, current_option, train_episode)
@@ -95,7 +95,7 @@ class ManagerA2CPCIntraRewards(AbstractManager):
 
             done = self.check_end_manager(o_r_d_i)
 
-        self.write_manager_score()
+        self.write_manager_score(train_episode)
 
     def compute_intra_reward(self, new_state):
         number_next_options = self.policy.get_number_next_options()
