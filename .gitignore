@@ -7,7 +7,6 @@ __pycache__
 env/
 src/
 results/
-metrics/
-backup_draw.py
-cluster_utils/RL-cluster-venv/
+*.png
+backup_draw.pycluster_utils/RL-cluster-venv/
 cluster_utils/jobs/

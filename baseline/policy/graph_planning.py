@@ -232,6 +232,13 @@ class GraphPlanningPolicyManager(AbstractPolicyManager):
         else:
             return None
 
+    def get_number_next_options(self):
+        if self.current_state_index is None:
+            return 0
+
+        else:
+            return len(self.transitions[self.current_state_index])
+
 
 class GraphPseudoCountReward(GraphPlanningPolicyManager):
     """

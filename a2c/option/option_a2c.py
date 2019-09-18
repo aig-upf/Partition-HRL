@@ -130,12 +130,14 @@ class A2COption(AbstractOption):
 
         return total_reward
 
-    def update_option(self, o_r_d_i, action, correct_termination, train_episode=None):
+    def update_option(self, o_r_d_i, action, correct_termination, intra_reward=0, train_episode=None):
         self.score += o_r_d_i[1]
 
         if train_episode:
             total_reward = self.compute_total_reward(o_r_d_i, correct_termination)
-            self.buffer.add((self.state[0], action, total_reward, o_r_d_i[0]["option"], correct_termination))   # now using correct_termination [ True, None, False]
+            total_reward += intra_reward
+            # now using correct_termination [ True, None, False]
+            self.buffer.add((self.state[0], action, total_reward, o_r_d_i[0]["option"], correct_termination))
 
         self.state = np.array([o_r_d_i[0]["option"]])
         self.replay(train_episode)
