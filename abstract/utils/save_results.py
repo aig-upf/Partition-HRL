@@ -57,6 +57,9 @@ class SaveResults(object):
         # plt.draw()
         # plt.pause(0.01)
         plt.savefig(str(self.dir_path_seed) + "/" + file_name)
+        if not os.path.exists("metrics/"):
+            os.mkdir("metrics/")
+
         plt.savefig("metrics/" + file_name)
         plt.close()
 
