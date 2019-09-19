@@ -1,5 +1,5 @@
-from mo.options.options import AbstractOption
-from mo.utils.miscellaneous import find_element_in_list
+from abstract.options.options import AbstractOption
+from abstract.utils.miscellaneous import find_element_in_list
 import numpy as np
 
 

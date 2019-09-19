@@ -1,5 +1,5 @@
 import numpy as np
-from mo.options.options import AbstractOption
+from abstract.options.options import AbstractOption
 from a2c.utils.models import A2CEager
 from a2c.utils.utils import ExperienceReplay
 

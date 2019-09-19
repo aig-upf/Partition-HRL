@@ -1,4 +1,4 @@
-from mo.utils.observation_wrapper import ObsPixelWrapper
+from abstract.utils.observation_wrapper import ObsPixelWrapper
 
 
 class ObservationZoneWrapper(ObsPixelWrapper):

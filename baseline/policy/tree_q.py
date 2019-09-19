@@ -1,7 +1,7 @@
-from mo.utils.miscellaneous import obs_equal
+from abstract.utils.miscellaneous import obs_equal
 import numpy as np
-from mo.manager.manager import AbstractPolicyManager
-from mo.structures.tree import Tree
+from abstract.manager.manager import AbstractPolicyManager
+from abstract.structures.tree import Tree
 
 
 class TreeQPolicyManager(AbstractPolicyManager):

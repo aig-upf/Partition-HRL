@@ -1,6 +1,6 @@
 import cv2
-from mo.utils.observation_wrapper import ObsPixelWrapper
-from mo.utils.miscellaneous import make_tuple
+from abstract.utils.observation_wrapper import ObsPixelWrapper
+from abstract.utils.miscellaneous import make_tuple
 
 
 class ObservationZoneWrapper(ObsPixelWrapper):

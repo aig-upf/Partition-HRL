@@ -1,5 +1,5 @@
 from collections import deque
-from mo.utils.observation_wrapper import ObsPixelWrapper
+from abstract.utils.observation_wrapper import ObsPixelWrapper
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt

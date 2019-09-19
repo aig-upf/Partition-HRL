@@ -1,6 +1,6 @@
-from mo.utils.miscellaneous import red, white, find_element_in_list
+from abstract.utils.miscellaneous import red, white, find_element_in_list
 import numpy as np
-from mo.manager.manager import AbstractPolicyManager
+from abstract.manager.manager import AbstractPolicyManager
 
 
 class GraphPlanningPolicyManager(AbstractPolicyManager):

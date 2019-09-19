@@ -10,3 +10,4 @@ results/
 *.png
 backup_draw.pycluster_utils/RL-cluster-venv/
 cluster_utils/jobs/
+backup_draw.py

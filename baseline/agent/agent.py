@@ -1,8 +1,8 @@
 from abc import ABCMeta, abstractmethod
 from tqdm import tqdm
 import numpy as np
-from mo.utils.show_render import ShowRender
-from mo.utils.save_results import SaveResults
+from abstract.utils.show_render import ShowRender
+from abstract.utils.save_results import SaveResults
 
 
 class AbstractAgent(metaclass=ABCMeta):
