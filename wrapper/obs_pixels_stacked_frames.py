@@ -31,9 +31,15 @@ class ObsPixelStackedWrapper(ObsPixelWrapper):
             index = index + image_channel_length
 
     def get_manager_obs(self, image):
+
+        #img_manager = ObsPixelWrapper.make_gray_scale(image)
+
         img_manager = ObsPixelWrapper.make_downsampled_image(image, self.parameters["ZONE_SIZE_MANAGER_X"],
                                                              self.parameters["ZONE_SIZE_MANAGER_Y"])
         img_manager = ObsPixelWrapper.sample_colors(img_manager, self.parameters["THRESH_BINARY_MANAGER"])
+
+        #img_manager = np.concatenate((img_manager, img_manager, img_manager))
+        #print(img_manager.shape)
         return img_manager
 
     def get_option_obs(self, image):

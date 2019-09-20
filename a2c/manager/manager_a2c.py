@@ -91,6 +91,7 @@ class ManagerA2CPCIntraRewards(AbstractManager):
 
                 # the manager does not need to know if the correct_termination is 0 or 1.
                 self.update_manager(o_r_d_i, current_option, train_episode)
+
                 current_option = None
 
             done = self.check_end_manager(o_r_d_i)

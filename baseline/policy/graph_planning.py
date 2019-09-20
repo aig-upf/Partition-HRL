@@ -304,7 +304,7 @@ class GraphPseudoCountReward(GraphPlanningPolicyManager):
         self.update_max_degree()
         self.current_state_index = new_state_index
 
-    def find_best_action(self, train_episode=None, verbose=True):
+    def find_best_action(self, train_episode=None, verbose=False):
         """
         when exploring a state, update the transitions values towards this state by updating the pseudo-count reward
         """
