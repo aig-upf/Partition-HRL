@@ -136,6 +136,7 @@ class A2COption(AbstractOption):
         if train_episode:
             total_reward = self.compute_total_reward(o_r_d_i, correct_termination)
             total_reward += intra_reward * 0.1
+            total_reward += intra_reward * self.parameters["intra_reward_coefficient"]
             # now using correct_termination [ True, None, False]
             self.buffer.add((self.state[0], action, total_reward, o_r_d_i[0]["option"], correct_termination))
 
