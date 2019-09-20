@@ -106,7 +106,7 @@ class GraphPlanningPolicyManager(AbstractPolicyManager):
         (next_state_index, _) = self.transitions[self.current_state_index][option_index]
         return self.states[next_state_index]
 
-    def find_best_action(self, train_episode=None, verbose=False):
+    def find_best_action(self, train_episode=None):
         if self.current_state_index is None or not self.transitions[self.current_state_index]:
             return None  # explore
 
@@ -124,7 +124,7 @@ class GraphPlanningPolicyManager(AbstractPolicyManager):
                 # then explore this state
                 self.current_path.append(None)
                 self.number_explorations[state_idx_to_explore] += 1
-                if verbose:
+                if self.parameters["verbose"]:
                     print(red + "explore" + white)
                     print(self)
                     print("target state to explore " + str(state_idx_to_explore))
@@ -140,10 +140,10 @@ class GraphPlanningPolicyManager(AbstractPolicyManager):
 
                 assert self.current_state_index != most_valued_vertex, \
                     "there is a transition from current_state_index but the max distance is - inf !"
-                if verbose:
+                if self.parameters["verbose"]:
                     print("most_valued_vertex: " + str(most_valued_vertex))
                 self.current_path = self.make_sub_path(predecessors, self.current_state_index, most_valued_vertex)
-                if verbose:
+                if self.parameters["verbose"]:
                     print(self)
                     print("target = " + str(most_valued_vertex))
                     print("new_path " + str(self.current_path))
@@ -155,13 +155,13 @@ class GraphPlanningPolicyManager(AbstractPolicyManager):
             if next_state is None:
                 return None
             else:
-                if verbose:
+                if self.parameters["verbose"]:
                     print("option number : " +
                           str([t[0] for t in self.transitions[self.current_state_index]].index(next_state)))
                 return [t[0] for t in self.transitions[self.current_state_index]].index(next_state)
 
         else:  # follow the existing path
-            if verbose:
+            if self.parameters["verbose"]:
                 print(self)
                 print("existing path " + str(self.current_path))
                 print("next target " + str(self.current_path[1]))
@@ -172,7 +172,7 @@ class GraphPlanningPolicyManager(AbstractPolicyManager):
                 if next_state is None:
                     return None
                 else:  # return the option to go toward the next state
-                    if verbose:
+                    if self.parameters["verbose"]:
                         print("option number : " +
                               str([t[0] for t in self.transitions[self.current_state_index]].index(next_state)))
 
@@ -266,7 +266,7 @@ class GraphPseudoCountReward(GraphPlanningPolicyManager):
 
                 t[new_state_edge_number] = (t[new_state_edge_number][0], edge_value)
 
-    def update_policy(self, new_state, value, verbose=False):
+    def update_policy(self, new_state, value):
         new_state_index = find_element_in_list(new_state, self.states)  # bottleneck. Maybe hash states.
 
         if new_state_index is None:
@@ -281,20 +281,20 @@ class GraphPseudoCountReward(GraphPlanningPolicyManager):
             self.transitions.append([])  # new edge without vertex
             self.transitions[self.current_state_index].append((new_state_index, edge_value))  # new vertex with a value
 
-            if verbose:
+            if self.parameters["verbose"]:
                 print("new state found " + str(new_state_index))
                 print("new_state_index " + str(new_state_index))
                 print("edge value " + str(edge_value))
 
         else:
-            if verbose:
+            if self.parameters["verbose"]:
                 print("state already exists " + str(new_state_index))
 
             if new_state_index not in [t[0] for t in self.transitions[self.current_state_index]]:
                 edge_value = value + self.parameters["edge_cost"] + \
                              self.compute_pseudo_count(self.number_explorations[new_state_index])
                 self.transitions[self.current_state_index].append((new_state_index, edge_value))
-                if verbose:
+                if self.parameters["verbose"]:
                     print("new_state_index " + str(new_state_index))
                     print("edge value " + str(edge_value))
 
@@ -304,20 +304,20 @@ class GraphPseudoCountReward(GraphPlanningPolicyManager):
         self.update_max_degree()
         self.current_state_index = new_state_index
 
-    def find_best_action(self, train_episode=None, verbose=True):
+    def find_best_action(self, train_episode=None):
         """
         when exploring a state, update the transitions values towards this state by updating the pseudo-count reward
         """
 
         if self.current_state_index is None or not self.transitions[self.current_state_index]:
-            if verbose:
+            if self.parameters["verbose"]:
                 print(self)
                 print("no option : let's explore")
 
             return None  # explore
 
         if len(self.current_path) <= 1:  # The current path is empty, make a new path.
-            if verbose:
+            if self.parameters["verbose"]:
                 print("path is empty")
 
             # compute the global best path from the current state index
@@ -334,7 +334,7 @@ class GraphPseudoCountReward(GraphPlanningPolicyManager):
                 "there is a transition from current_state_index but the max distance is - inf !"
             self.current_path = self.make_sub_path(predecessors, self.current_state_index, most_valued_vertex)
 
-            if verbose:
+            if self.parameters["verbose"]:
                 print(self)
                 print("path " + str(self.current_path))
                 print("target " + str(self.current_path[-1]))
@@ -346,7 +346,7 @@ class GraphPseudoCountReward(GraphPlanningPolicyManager):
             return [t[0] for t in self.transitions[self.current_state_index]].index(next_state)
 
         else:  # follow the existing path
-            if verbose:
+            if self.parameters["verbose"]:
                 print(self)
                 print("path is *not* empty")
                 print("path " + str(self.current_path))
@@ -354,7 +354,7 @@ class GraphPseudoCountReward(GraphPlanningPolicyManager):
 
             a = self.current_path.pop(0)
             if self.current_state_index == a:  # we are in the right state, follow the rest of the path
-                if verbose:
+                if self.parameters["verbose"]:
                     print("we are in the correct state")
 
                 next_state = self.current_path[0]  # next state of the path
@@ -362,7 +362,7 @@ class GraphPseudoCountReward(GraphPlanningPolicyManager):
                 return [t[0] for t in self.transitions[self.current_state_index]].index(next_state)
 
             else:  # we are out of the path, make a new one and start again
-                if verbose:
+                if self.parameters["verbose"]:
                     print(self)
                     print(self.current_path)
                     print("we are not in the correct state, abort mission.")
