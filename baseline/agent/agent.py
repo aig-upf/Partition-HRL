@@ -64,6 +64,9 @@ class AbstractAgent(metaclass=ABCMeta):
         # set the seeds
         np.random.seed(seed)
         environment.seed(seed)
+        # prepare the file for the results
+        save_results = SaveResults()
+        save_results.set_seed(seed)
 
         # prepare to display the states
         if self.parameters["display_environment"]:
@@ -71,6 +74,9 @@ class AbstractAgent(metaclass=ABCMeta):
 
         for t in tqdm(range(1, self.parameters["number_episodes"] + 1)):
             self._train_simulate(environment, t)
+
+            if not t % 200:
+                save_results.write_message_in_a_file("score", self.score)
 
     def simulate(self, environment, seed=0):
         """
@@ -82,17 +88,8 @@ class AbstractAgent(metaclass=ABCMeta):
         np.random.seed(seed)
         environment.seed(seed)
 
-        # prepare the file for the results
-        save_results = SaveResults(self.parameters)
-        save_results.write_setting()
-        save_results.set_file_results_name(seed)
-
         # simulate
         self._train_simulate(environment)
-
-        # write the results and write that the experiment went well
-        save_results.write_reward(self.parameters["number_episodes"], self.score)
-        save_results.write_message("Experiment complete.")
 
     @staticmethod
     def compute_total_score(o_r_d_i):
