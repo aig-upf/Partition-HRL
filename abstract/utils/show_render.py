@@ -72,6 +72,7 @@ class ShowRender(object):
         time.sleep(self.slow_display)
 
     def close(self):
+        self.viewer.window.close()
         self.viewer.close()
 
     def key_press(self, key, mod):
