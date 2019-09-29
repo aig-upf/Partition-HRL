@@ -46,10 +46,12 @@ data = {
         "probability_random_action_manager": 0.1,
         "reward_end_option": 0.1,
         "penalty_end_option": -0.1,
+        "verbose": False,
+        "intra_reward_coefficient": 0.1,
 
         # environment's parameters
         "env_name": "GE_MazeKeyDoor-v2",
-        "obs_wrapper_name": "obs_pixels_stacked_frames",
+        "obs_wrapper_name": "PixelsStackedFrames",
         "stack_images_length": 4,
         "OPTION_OBSERVATION_IMAGE_WIDTH": None,
         "OPTION_OBSERVATION_IMAGE_HEIGHT": None,

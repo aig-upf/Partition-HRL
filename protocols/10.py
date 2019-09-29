@@ -16,7 +16,7 @@ data = {"display_environment": True,
         "penalty_end_option": -0.1,
         # parameters for environment's observations (manager and option)
         "env_name": "MiniGrid-Empty-5x5-v0",
-        "obs_wrapper_name": "minigrid_obs",
+        "obs_wrapper_name": "Minigrid",
         "stack_images_length": 4,
         "NUMBER_ZONES_GRIDWORLD_X": 160,
         "NUMBER_ZONES_GRIDWORLD_Y": 160,

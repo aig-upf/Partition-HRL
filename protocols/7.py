@@ -18,12 +18,12 @@ shared_conv_layers = SharedConvLayers()
 
 data = {
         "manager_file": "a2c.manager.manager_a2c",
-        "manager_name": "ManagerA2CPCIntraRewards",
+        "manager_name": "ManagerA2CPseudoCount",
         "max_number_actions": 1000,
         "verbose": False,
         "episodes_performances": 100,
-        "seeds": range(5),
-        "number_episodes": 3000,
+        "seeds": range(2),
+        "number_episodes": 2500,
         "learning_rate": 0.001,
 
         # Policy Options
@@ -37,9 +37,9 @@ data = {
         "SHARED_CONVOLUTION_LAYERS": shared_conv_layers,
         "CRITIC_NETWORK": CriticNetwork,
         "ACTOR_NETWORK": ActorNetwork,
-        "reward_end_option": 0.6,
-        "penalty_end_option": -0.6,
-        "intra_reward_coefficient": 0.1,
+        "reward_end_option": 0.1,
+        "penalty_end_option": -1,
+        "intra_reward_coefficient": 0.01,
 
         # policy manager
         "edge_cost": -0.01,
@@ -48,7 +48,7 @@ data = {
 
         # environment's parameters
         "env_name": "GE_MazeKeyDoor-v0",
-        "obs_wrapper_name": "obs_pixels_stacked_frames",
+        "obs_wrapper_name": "PixelsStackedFrames",
         "display_environment": True,
         "stack_images_length": 4,
         "OPTION_OBSERVATION_IMAGE_WIDTH": None,

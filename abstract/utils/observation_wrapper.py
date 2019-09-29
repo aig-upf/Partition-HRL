@@ -42,7 +42,6 @@ class ObsPixelWrapper(gym.ObservationWrapper):
     def make_gray_scale(image):
         im = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         stacked_img = np.stack((im,)*3, axis=-1)
-        print(stacked_img.shape)
         return stacked_img
 
     @staticmethod

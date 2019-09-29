@@ -1,28 +1,23 @@
-from manager.manager.models import SharedConvLayers, CriticNetwork, ActorNetwork
+from a2c.utils.models import SharedConvLayers, CriticNetwork, ActorNetwork
 import tensorflow as tf
 import os
-from gym_minigrid.register import env_list
-
-
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
+tf.logging.set_verbosity(tf.logging.ERROR)
+
 tf.enable_eager_execution()
 # todo fix this The name tf.enable_eager_execution is deprecated. Please use tf.compat.v1.enable_eager_execution instead
-
 
 # Just to be sure that we don't have some others graph loaded
 tf.reset_default_graph()
 # todo fix this:  The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
 
 shared_conv_layers = SharedConvLayers()
-critic_network = CriticNetwork(64, shared_conv_layers)
-actor_network = ActorNetwork(64, 18, shared_conv_layers)
-
 data = {
-        "manager_file": "manager.manager_a2c",
-        "manager_name": "AgentA2C",
+        "manager_file": "a2c.manager.manager_a2c",
+        "manager_name": "ManagerA2C",
         "max_number_actions": 1000,
         "display_environment": True,
 
@@ -44,6 +39,7 @@ data = {
         "ACTOR_NETWORK": ActorNetwork,
 
         # do we need this ?
+        "edge_cost": 0.1,
         "probability_random_action_manager": 0.1,
         "probability_random_action_manager_decay": 1/5000,
         "penalty_death_option": -1,
@@ -53,7 +49,7 @@ data = {
 
         # environment's parameters
         "env_name": "MiniGrid-Empty-5x5-v0",
-        "obs_wrapper_name": "minigrid_obs",
+        "obs_wrapper_name": "Minigrid",
         "stack_images_length": 4,
         "OPTION_OBSERVATION_IMAGE_WIDTH": None,
         "OPTION_OBSERVATION_IMAGE_HEIGHT": None,

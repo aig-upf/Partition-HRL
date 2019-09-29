@@ -18,12 +18,13 @@ Options:
 import gym
 import gridenvs.examples
 import gym_minigrid
+import microgridRLsimulator
 
 from docopt import docopt
 import importlib.util
 import os
-import pandas as pd
 import numpy as np
+import wrapper
 
 import matplotlib
 if os.environ.get('DISPLAY','') == '':
@@ -54,8 +55,10 @@ class Experiment(object):
 
         if "obs_wrapper_name" in self.parameters.keys():
             print("observation wrapper name is " + str(self.parameters["obs_wrapper_name"]))
-            obs = getattr(importlib.import_module("wrapper." + self.parameters["obs_wrapper_name"]),
-                          "ObservationZoneWrapper")
+            # obs = getattr(importlib.import_module("wrapper." + self.parameters["obs_wrapper_name"]),
+            #               "ObservationZoneWrapper")
+
+            obs = eval(str("wrapper.") + self.parameters["obs_wrapper_name"])
 
             return obs(env, self.parameters)
 

@@ -45,10 +45,12 @@ data = {
         "edge_cost": -0.01,
         "max_explore": 10,
         "probability_random_action_manager": 0.1,
+        "verbose": False,
+        "intra_reward_coefficient": 0.1,
 
         # environment's parameters
         "env_name": "MontezumaRevenge-v0",
-        "obs_wrapper_name": "obs_pixels_stacked_frames",
+        "obs_wrapper_name": "PixelsStackedFrames",
         "stack_images_length": 4,
         "NUMBER_ZONES_ENV_X": (2 ** 5) * 5,
         "NUMBER_ZONES_ENV_Y": 2 * 3 * 5 * 7,
