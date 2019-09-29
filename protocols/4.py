@@ -1,13 +1,15 @@
-from manager.manager.models import SharedConvLayers, CriticNetwork, ActorNetwork
+from a2c.utils.models import SharedConvLayers, CriticNetwork, ActorNetwork
 import tensorflow as tf
 import os
+from wrapper.obs import *
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
+tf.logging.set_verbosity(tf.logging.ERROR)
+
 tf.enable_eager_execution()
 # todo fix this The name tf.enable_eager_execution is deprecated. Please use tf.compat.v1.enable_eager_execution instead
-
 
 # Just to be sure that we don't have some others graph loaded
 tf.reset_default_graph()
@@ -49,7 +51,7 @@ data = {
 
         # environment's parameters
         "env_name": "MontezumaRevenge-v0",
-        "obs_wrapper_name": "PixelsStackedFrames",
+        "obs_wrapper_name": PixelsStackedFrames,
         "stack_images_length": 4,
         "NUMBER_ZONES_MONTEZUMA_X": (2 ** 5) * 5,
         "NUMBER_ZONES_MONTEZUMA_Y": 2 * 3 * 5 * 7,

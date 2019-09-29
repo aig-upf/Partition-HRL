@@ -1,6 +1,7 @@
 from a2c.utils.models import SharedConvLayers, CriticNetwork, ActorNetwork
 import tensorflow as tf
 import os
+from wrapper.obs import *
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
@@ -48,7 +49,7 @@ data = {
 
         # environment's parameters
         "env_name": "GE_MazeKeyDoor-v0",
-        "obs_wrapper_name": "PixelsStackedFrames",
+        "obs_wrapper_name": PixelsStackedFrames,
         "display_environment": False,
         "stack_images_length": 4,
         "OPTION_OBSERVATION_IMAGE_WIDTH": None,

@@ -24,7 +24,6 @@ from docopt import docopt
 import importlib.util
 import os
 import numpy as np
-import wrapper
 
 import matplotlib
 if os.environ.get('DISPLAY','') == '':
@@ -58,7 +57,7 @@ class Experiment(object):
             # obs = getattr(importlib.import_module("wrapper." + self.parameters["obs_wrapper_name"]),
             #               "ObservationZoneWrapper")
 
-            obs = eval(str("wrapper.") + self.parameters["obs_wrapper_name"])
+            obs = self.parameters["obs_wrapper_name"]
 
             return obs(env, self.parameters)
 

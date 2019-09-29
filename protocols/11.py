@@ -1,6 +1,7 @@
 from a2c.utils.models import SharedConvLayers, CriticNetwork, ActorNetwork
 import tensorflow as tf
 import os
+from wrapper.obs import *
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
@@ -50,7 +51,7 @@ data = {
 
         # environment's parameters
         "env_name": "MontezumaRevenge-v0",
-        "obs_wrapper_name": "PixelsStackedFrames",
+        "obs_wrapper_name": PixelsStackedFrames,
         "stack_images_length": 4,
         "NUMBER_ZONES_ENV_X": (2 ** 5) * 5,
         "NUMBER_ZONES_ENV_Y": 2 * 3 * 5 * 7,
