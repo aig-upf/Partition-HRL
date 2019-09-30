@@ -1,7 +1,7 @@
 import gym
 import cv2
-from skimage.measure import block_reduce
 import numpy as np
+
 
 class ObsPixelWrapper(gym.ObservationWrapper):
     """
@@ -53,10 +53,10 @@ class ObsPixelWrapper(gym.ObservationWrapper):
         if (len_x % zone_size_x == 0) and (len_y % zone_size_y == 0):
             downsampling_size = (len_x // zone_size_x, len_y // zone_size_y)
             img_blurred = cv2.resize(image, downsampling_size, interpolation=cv2.INTER_AREA)
-            #img_blurred = block_reduce(image, block_size=(zone_size_x, zone_size_y, 1), func=np.mean)
-            #img_blurred = cv2.pyrDown(image, downsampling_size)
-            #img_blurred = cv2.pyrDown(img_blurred, downsampling_size)
-            #img_blurred = cv2.pyrDown(img_blurred, downsampling_size)
+            # img_blurred = block_reduce(image, block_size=(zone_size_x, zone_size_y, 1), func=np.mean)
+            # img_blurred = cv2.pyrDown(image, downsampling_size)
+            # img_blurred = cv2.pyrDown(img_blurred, downsampling_size)
+            # img_blurred = cv2.pyrDown(img_blurred, downsampling_size)
             return img_blurred
 
         else:

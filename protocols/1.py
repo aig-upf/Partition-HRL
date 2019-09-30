@@ -1,5 +1,5 @@
 data = {
-        "manager_file": "manager",
+        "manager_file": "a2c.manager.manager_a2c",
         "manager_name": "AgentQMontezuma",
         "display_environment": True,
 
@@ -20,7 +20,7 @@ data = {
 
         # environment parameters
         "env_name": "MontezumaRevenge-v0",
-        "obs_wrapper_name": "obs_pixels",
+        "obs_wrapper_name": "obs_a2c",
 
         "NUMBER_ZONES_MONTEZUMA_X": (2 ** 5) * 5,
         "NUMBER_ZONES_MONTEZUMA_Y": 2 * 3 * 5 * 7,
