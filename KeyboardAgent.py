@@ -10,18 +10,20 @@ import gym_minigrid
 
 class ShowRenderKeyboard(ShowRender):
 
-    def __init__(self, number_of_actions):
+    def __init__(self, number_of_actions, parameters):
         from gym.envs.classic_control import rendering  # causes problem with the cluster
 
         self.display_learning = True
 
-        self.vanilla_view = True
+        self.vanilla_view = False
         self.option_view = False
         self.agent_view = False
-        self.combined_view = False
+        self.combined_view = True
         self.slow_display = 0
 
         self.ACTIONS = number_of_actions
+        self.list_of_actions_keys = parameters["Keyboard_keys"][0:number_of_actions]
+        print(self.list_of_actions_keys)
 
         self.viewer = rendering.SimpleImageViewer()
         self.viewer.width = 512
@@ -39,34 +41,9 @@ class ShowRenderKeyboard(ShowRender):
         self.human_wants_restart = False
         self.human_sets_pause = False
 
-        print("Press keys 1 2 3 ... to take actions 1 2 3 ...")
-        print("No keys pressed is taking action 0")
-
     def key_press(self, key, mod):
         if key == 0xff0d: self.human_wants_restart = True
         #if key == 32: self.human_sets_pause = not self.human_sets_pause
-
-        if key == ord("d"):
-            print("press d to display the observation")
-            self.display_learning = not self.display_learning
-
-        if key == ord("o"):
-            self.set_option_view()
-
-        if key == ord("v"):
-            self.set_vanilla_view()
-
-        if key == ord("a"):
-            self.set_agent_view()
-
-        if key == ord("m"):
-            self.set_combined_view()
-
-        if key == ord("s"):
-            self.set_slow_display()
-
-        if key == ord("f"):
-            self.set_fast_display()
 
         if key == ord(" "):
             if self.option_view:
@@ -81,16 +58,21 @@ class ShowRenderKeyboard(ShowRender):
             elif self.combined_view:
                 self.set_vanilla_view()
 
+        print(key)
 
-        a = int(key - ord('0'))
-        if a <= 0 or a >= self.ACTIONS: return
-        self.human_agent_action = a
+        if key in self.list_of_actions_keys:
+            a = int(self.list_of_actions_keys.index(key))
+            self.human_agent_action = a
+
+
 
 
 
     def key_release(self, key, mod):
-        a = int(key - ord('0'))
-        if a <= 0 or a >= self.ACTIONS: return
+        a = 0
+        if key in self.list_of_actions_keys:
+            a = int(self.list_of_actions_keys.index(key))
+            self.human_agent_action = a
         if self.human_agent_action == a:
             self.human_agent_action = 0
 
@@ -105,17 +87,17 @@ class Experiment(object):
         self.parameters = protocol_exp
         self.results_paths = []
         self.env = self.get_environment()
-        self.show_render = self.get_show_render(self.env.action_space.n)
+        self.show_render = self.get_show_render(self.env.action_space.n, parameters)
         self.total_reward = 0
         self.total_timesteps = 0
 
         print("ACTIONS={}".format(self.show_render.ACTIONS))
-        print("Press keys 1 2 3 ... to take actions 1 2 3 ...")
+        print("Press keys ... to take actions ...")
         print("No keys pressed is taking action 0")
 
     @staticmethod
-    def get_show_render(number_of_actions):
-        return ShowRenderKeyboard(number_of_actions)
+    def get_show_render(number_of_actions, parameters):
+        return ShowRenderKeyboard(number_of_actions, parameters)
 
     def get_environment(self):
         """
@@ -161,7 +143,8 @@ class Experiment(object):
                 self.env.render()
                 time.sleep(0.1)
             time.sleep(0.1)
-        print("timesteps %i reward %0.2f" % (self.total_timesteps, self.total_reward))
+        print("timesteps %i total reward %0.2f" % (self.total_timesteps, self.total_reward))
+        self.total_reward = 0
 
 
 if __name__ == '__main__':

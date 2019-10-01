@@ -2,7 +2,7 @@ from abstract.utils.key_codes import Key
 
 data = {
         # environment's parameters
-        "env_name": "GE_MazeKeyDoor-v0",
+        "env_name": "GE_MazeKeyDoorXL-v0",
         "obs_wrapper_name": "obs_pixels_stacked_frames",
         "display_environment": True,
         "stack_images_length": 4,
@@ -15,8 +15,8 @@ data = {
         "NUMBER_ZONES_GRIDWORLD_Y": 84,
         "NUMBER_ZONES_OPTION_X": 84,
         "NUMBER_ZONES_OPTION_Y": 84,
-        "NUMBER_ZONES_MANAGER_X": 6,
-        "NUMBER_ZONES_MANAGER_Y": 6,
+        "NUMBER_ZONES_MANAGER_X": 12,
+        "NUMBER_ZONES_MANAGER_Y": 12,
         "THRESH_BINARY_OPTION": 0,
         "THRESH_BINARY_MANAGER": 0
         }
