@@ -26,7 +26,7 @@ class ShowRenderKeyboard(ShowRender):
         print(self.list_of_actions_keys)
 
         self.viewer = rendering.SimpleImageViewer()
-        self.viewer.width = 512
+        self.viewer.width = 1024
         self.viewer.height = 512
         self.viewer.window = pyglet.window.Window(width=self.viewer.width, height=self.viewer.height,
                                                   display=self.viewer.display, vsync=False, resizable=True)
@@ -99,24 +99,6 @@ class Experiment(object):
     def get_show_render(number_of_actions, parameters):
         return ShowRenderKeyboard(number_of_actions, parameters)
 
-    def get_environment(self):
-        """
-        :return: the environment with parameters specified in the protocol
-        """
-        print("charging the environment: " + str(self.parameters["env_name"]))
-        env = gym.make(self.parameters["env_name"])
-
-        if "obs_wrapper_name" in self.parameters.keys():
-            print("observation wrapper name is " + str(self.parameters["obs_wrapper_name"]))
-            obs = getattr(importlib.import_module("wrapper." + self.parameters["obs_wrapper_name"]),
-                          "ObservationZoneWrapper")
-
-            return obs(env, self.parameters)
-
-        else:
-            print("No observation wrapper.")
-            return env
-
     def run(self):
         o_r_d_i = [self.env.reset()] + [None]*3
         self.show_render.render(o_r_d_i[0])
@@ -146,13 +128,30 @@ class Experiment(object):
         print("timesteps %i total reward %0.2f" % (self.total_timesteps, self.total_reward))
         self.total_reward = 0
 
+    def get_environment(self):
+        """
+        :return: the environment with parameters specified in the protocol
+        """
+        print("charging the environment: " + str(self.parameters["env_name"]))
+        env = gym.make(self.parameters["env_name"])
+
+        if "obs_wrapper_name" in self.parameters.keys():
+            print("observation wrapper name is " + str(self.parameters["obs_wrapper_name"]))
+            obs = self.parameters["obs_wrapper_name"]
+
+            return obs(env, self.parameters)
+
+        else:
+            print("No observation wrapper.")
+            return env
+
 
 if __name__ == '__main__':
     # Parse command line arguments
     args = sys.argv[1]
 
     # Get the protocol info
-    path_protocol = 'protocols.' + args
+    path_protocol = 'protocols.Keyboard_agent_protocols.' + args
     parameters = importlib.import_module(path_protocol).data
     parameters["path"] = path_protocol
 

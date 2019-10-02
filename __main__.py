@@ -54,9 +54,6 @@ class Experiment(object):
 
         if "obs_wrapper_name" in self.parameters.keys():
             print("observation wrapper name is " + str(self.parameters["obs_wrapper_name"]))
-            # obs = getattr(importlib.import_module("wrapper." + self.parameters["obs_wrapper_name"]),
-            #               "ObservationZoneWrapper")
-
             obs = self.parameters["obs_wrapper_name"]
 
             return obs(env, self.parameters)

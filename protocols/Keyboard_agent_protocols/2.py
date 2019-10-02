@@ -1,9 +1,10 @@
 from abstract.utils.key_codes import Key
+from wrapper.obs import *
 
 data = {
         # environment's parameters
         "env_name": "GE_MazeKeyDoorXL-v0",
-        "obs_wrapper_name": "obs_pixels_stacked_frames",
+        "obs_wrapper_name": PixelsStackedFrames,
         "display_environment": True,
         "stack_images_length": 4,
 
