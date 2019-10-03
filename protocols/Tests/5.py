@@ -18,12 +18,12 @@ shared_conv_layers = SharedConvLayers()
 
 data = {
         "manager_file": "a2c.manager.manager_a2c",
-        "manager_name": "ManagerA2CPCIntraRewards",
+        "manager_name": "ManagerA2CPseudoCount",
         "max_number_actions": 1000,
         "verbose": False,
         "episodes_performances": 100,
         "seeds": range(5),
-        "number_episodes": 3000,
+        "number_episodes": 500000,
         "learning_rate": 0.001,
 
         # Policy Options
@@ -57,10 +57,10 @@ data = {
         "NUMBER_ZONES_GRIDWORLD_Y": 84,
         "NUMBER_ZONES_OPTION_X": 84,
         "NUMBER_ZONES_OPTION_Y": 84,
-        "NUMBER_ZONES_MANAGER_X": 12,
-        "NUMBER_ZONES_MANAGER_Y": 12,
+        "NUMBER_ZONES_MANAGER_X": 4,
+        "NUMBER_ZONES_MANAGER_Y": 4,
         "THRESH_BINARY_OPTION": 0,
-        "THRESH_BINARY_MANAGER": 20
+        "THRESH_BINARY_MANAGER": 10
         }
 
 data.update({"ZONE_SIZE_MANAGER_X": data["NUMBER_ZONES_GRIDWORLD_X"] // data["NUMBER_ZONES_MANAGER_X"],

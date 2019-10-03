@@ -15,9 +15,9 @@ data = {
         "NUMBER_ZONES_OPTION_X": (2 ** 5) * 5,
         "NUMBER_ZONES_OPTION_Y": 2 * 3 * 5 * 7,
         "THRESH_BINARY_OPTION": 0,
-        "NUMBER_ZONES_MANAGER_X": 2 ** 3,
-        "NUMBER_ZONES_MANAGER_Y": 3 * 7,
-        "THRESH_BINARY_MANAGER": 0
+        "NUMBER_ZONES_MANAGER_X": 2,
+        "NUMBER_ZONES_MANAGER_Y": 2,
+        "THRESH_BINARY_MANAGER": 2
         }
 
 data.update({"ZONE_SIZE_MANAGER_X": data["NUMBER_ZONES_ENV_X"] // data["NUMBER_ZONES_MANAGER_X"],

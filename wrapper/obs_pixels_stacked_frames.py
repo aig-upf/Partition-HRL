@@ -10,11 +10,18 @@ class ObsPixelStackedWrapper(ObsPixelWrapper):
 
         super().__init__(env, parameters)
         self.images_stack = deque([], maxlen=self.parameters["stack_images_length"])
+        self.old_abstract_state = 0
+        self.abstract_states = []
 
     @staticmethod
     def make_gray_scale(image):
-        im = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) / 255
-        im = im.reshape((*im.shape, 1))  # reshape for the neural network for manager
+        im = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        #im = im.reshape((*im.shape, 1))  # reshape for the neural network for manager
+        return im
+
+    @staticmethod
+    def normalize(image):
+        im = image / 255
         return im
 
     def show_stacked_frames(self, stacked_image):
@@ -30,21 +37,34 @@ class ObsPixelStackedWrapper(ObsPixelWrapper):
             plt.show()
             index = index + image_channel_length
 
+    def check_new_abstract_state(self, abstract_state):
+
+        if ObsPixelWrapper.np_in_list(abstract_state, self.abstract_states):
+            if np.array_equal(abstract_state, self.old_abstract_state):
+                return
+            else:
+                print(" Abstract state - ", [np.array_equal(abstract_state, x) for x in self.abstract_states].index(True))
+                self.old_abstract_state = abstract_state
+        else:
+            self.abstract_states.append(abstract_state)
+            print(" New abstract state - ", [np.array_equal(abstract_state, x) for x in self.abstract_states].index(True))
+
+
     def get_manager_obs(self, image):
 
-        #img_manager = ObsPixelWrapper.make_gray_scale(image)
+        img_manager = ObsPixelStackedWrapper.make_gray_scale(image)
 
-        img_manager = ObsPixelWrapper.make_downsampled_image(image, self.parameters["ZONE_SIZE_MANAGER_X"],
-                                                             self.parameters["ZONE_SIZE_MANAGER_Y"])
         img_manager = ObsPixelWrapper.sample_colors(img_manager, self.parameters["THRESH_BINARY_MANAGER"])
 
-        #img_manager = np.concatenate((img_manager, img_manager, img_manager))
-        #print(img_manager.shape)
+        img_manager = ObsPixelWrapper.make_downsampled_image(img_manager, self.parameters["ZONE_SIZE_MANAGER_X"],
+                                                             self.parameters["ZONE_SIZE_MANAGER_Y"])
+
+        #self.check_new_abstract_state(img_manager)
+
         return img_manager
 
     def get_option_obs(self, image):
-        img_option = ObsPixelStackedWrapper.make_gray_scale(image)
-        # img_option = image / 255
+        img_option = ObsPixelStackedWrapper.normalize(image)
         self.images_stack.append(img_option)
 
         img_option_stacked = np.zeros((img_option.shape[0], img_option.shape[1],

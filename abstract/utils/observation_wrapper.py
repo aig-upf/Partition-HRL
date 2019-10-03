@@ -33,17 +33,31 @@ class ObsPixelWrapper(gym.ObservationWrapper):
         return observation
 
     @staticmethod
+    def np_in_list(array, list):
+        for element in list:
+            if np.array_equal(element, array):
+                return True
+        return False
+
+    @staticmethod
     def sample_colors(image, threshold):
         img = cv2.medianBlur(image, 1)
-        _, img = cv2.threshold(img, threshold, 255, cv2.THRESH_BINARY)
-        return img
+        #img = np.clip(img, treshold, treshold)
+
+        img_quantizied = np.floor_divide(img, threshold) * threshold
+        #_, img = cv2.threshold(img_quantizied, 100, 255, cv2.THRESH_BINARY)
+
+        return img_quantizied
 
     @staticmethod
     def make_gray_scale(image):
         im = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         stacked_img = np.stack((im,)*3, axis=-1)
-        print(stacked_img.shape)
         return stacked_img
+
+    @staticmethod
+    def hash_numpy_array_equal( a, b):
+        return hash(a.tostring()) == hash(b.tostring())
 
     @staticmethod
     def make_downsampled_image(image, zone_size_x, zone_size_y):
@@ -54,9 +68,11 @@ class ObsPixelWrapper(gym.ObservationWrapper):
             downsampling_size = (len_x // zone_size_x, len_y // zone_size_y)
             img_blurred = cv2.resize(image, downsampling_size, interpolation=cv2.INTER_AREA)
             # img_blurred = block_reduce(image, block_size=(zone_size_x, zone_size_y, 1), func=np.mean)
-            # img_blurred = cv2.pyrDown(image, downsampling_size)
-            # img_blurred = cv2.pyrDown(img_blurred, downsampling_size)
-            # img_blurred = cv2.pyrDown(img_blurred, downsampling_size)
+            #img_blurred = cv2.pyrDown(image, downsampling_size)
+            #img_blurred = cv2.pyrDown(img_blurred, downsampling_size)
+            #img_blurred = cv2.pyrDown(img_blurred, downsampling_size)
+            #img_blurred = cv2.pyrDown(img_blurred, downsampling_size)
+            #img_blurred = cv2.pyrDown(img_blurred, downsampling_size)
             return img_blurred
 
         else:
