@@ -1,6 +1,8 @@
 import gym
 import cv2
 import numpy as np
+from skimage.transform import downscale_local_mean
+from skimage.measure import compare_ssim
 
 
 class ObsPixelWrapper(gym.ObservationWrapper):
@@ -40,6 +42,24 @@ class ObsPixelWrapper(gym.ObservationWrapper):
         return False
 
     @staticmethod
+    def ssim_in_list(array, list, multichannel):
+        for element in list:
+            if ObsPixelWrapper.SSIM_equal(element, array, multichannel):
+                return True
+        return False
+
+    @staticmethod
+    def SSIM_equal(abstract_state_1, abstract_state_2, multichannel, verbose=False):
+        x = round(compare_ssim(abstract_state_1, abstract_state_2, 3, multichannel=multichannel, gaussian_weights=True, use_sample_covariance=False), 3)
+        #print(x)
+        if x == 1:
+            return True
+        else:
+            if verbose:
+                print(x)
+            False
+
+    @staticmethod
     def sample_colors(image, threshold):
         img = cv2.medianBlur(image, 1)
         #img = np.clip(img, treshold, treshold)
@@ -61,18 +81,14 @@ class ObsPixelWrapper(gym.ObservationWrapper):
 
     @staticmethod
     def make_downsampled_image(image, zone_size_x, zone_size_y):
-        len_y = len(image)
-        len_x = len(image[0])
+        len_x = image.shape[0]
+        len_y = image.shape[1]
 
         if (len_x % zone_size_x == 0) and (len_y % zone_size_y == 0):
-            downsampling_size = (len_x // zone_size_x, len_y // zone_size_y)
-            img_blurred = cv2.resize(image, downsampling_size, interpolation=cv2.INTER_AREA)
-            # img_blurred = block_reduce(image, block_size=(zone_size_x, zone_size_y, 1), func=np.mean)
-            #img_blurred = cv2.pyrDown(image, downsampling_size)
-            #img_blurred = cv2.pyrDown(img_blurred, downsampling_size)
-            #img_blurred = cv2.pyrDown(img_blurred, downsampling_size)
-            #img_blurred = cv2.pyrDown(img_blurred, downsampling_size)
-            #img_blurred = cv2.pyrDown(img_blurred, downsampling_size)
+            if (len(image.shape)) == 3:
+                img_blurred = downscale_local_mean(image, (zone_size_y, zone_size_x, 1)).astype(np.uint8)
+            else:
+                img_blurred = downscale_local_mean(image, (zone_size_y, zone_size_x)).astype(np.uint8)
             return img_blurred
 
         else:

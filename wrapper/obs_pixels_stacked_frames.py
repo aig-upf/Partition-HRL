@@ -37,29 +37,46 @@ class ObsPixelStackedWrapper(ObsPixelWrapper):
             plt.show()
             index = index + image_channel_length
 
-    def check_new_abstract_state(self, abstract_state):
+    def check_SSIM_abstract_state(self, abstract_state):
 
-        if ObsPixelWrapper.np_in_list(abstract_state, self.abstract_states):
-            if np.array_equal(abstract_state, self.old_abstract_state):
+        if not self.abstract_states:
+            self.abstract_states.append(abstract_state)
+            print(" Abstract state - ",
+                  [ObsPixelWrapper.SSIM_equal(abstract_state, x, not self.parameters["GRAY_SCALE"], True)
+                   for x in self.abstract_states].index(True),
+                  )
+            self.old_abstract_state = abstract_state
+
+            return
+
+        if ObsPixelWrapper.ssim_in_list(abstract_state, self.abstract_states, not self.parameters["GRAY_SCALE"]):
+            if ObsPixelWrapper.SSIM_equal(abstract_state, self.old_abstract_state, not self.parameters["GRAY_SCALE"]):
                 return
             else:
-                print(" Abstract state - ", [np.array_equal(abstract_state, x) for x in self.abstract_states].index(True))
+                print(" Abstract state - ",
+                      [ObsPixelWrapper.SSIM_equal(abstract_state, x, not self.parameters["GRAY_SCALE"], True)
+                       for x in self.abstract_states].index(True))
+
                 self.old_abstract_state = abstract_state
+
         else:
             self.abstract_states.append(abstract_state)
-            print(" New abstract state - ", [np.array_equal(abstract_state, x) for x in self.abstract_states].index(True))
+            print(" New Abstract state - ",
+                  [ObsPixelWrapper.SSIM_equal(abstract_state, x, not self.parameters["GRAY_SCALE"], True)
+                   for x in self.abstract_states].index(True))
 
 
     def get_manager_obs(self, image):
 
-        img_manager = ObsPixelStackedWrapper.make_gray_scale(image)
+        if self.parameters["GRAY_SCALE"]:
+            image = ObsPixelStackedWrapper.make_gray_scale(image)
 
-        img_manager = ObsPixelWrapper.sample_colors(img_manager, self.parameters["THRESH_BINARY_MANAGER"])
+        #img_manager = ObsPixelWrapper.sample_colors(img_manager, self.parameters["THRESH_BINARY_MANAGER"])
 
-        img_manager = ObsPixelWrapper.make_downsampled_image(img_manager, self.parameters["ZONE_SIZE_MANAGER_X"],
+        img_manager = ObsPixelWrapper.make_downsampled_image(image, self.parameters["ZONE_SIZE_MANAGER_X"],
                                                              self.parameters["ZONE_SIZE_MANAGER_Y"])
 
-        #self.check_new_abstract_state(img_manager)
+        #self.check_SSIM_abstract_state(img_manager)
 
         return img_manager
 

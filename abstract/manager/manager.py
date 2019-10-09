@@ -12,7 +12,7 @@ from abstract.options.options import AbstractOption
 from abstract.options.options_explore import AbstractOptionExplore
 from abstract.utils.save_results import SaveResults
 from abstract.utils.show_render import ShowRender
-from abstract.utils.miscellaneous import obs_equal, constrained_type, check_type
+from abstract.utils.miscellaneous import obs_equal, SSIM_obs_equal, constrained_type, check_type
 from collections import deque
 
 
@@ -43,8 +43,8 @@ class AbstractManager(metaclass=ABCMeta):
         self.score = deque(maxlen=self.deque_max_length)
 
         # checks that policy and options have the right type.
-        constrained_type(self.policy, AbstractPolicyManager)
-        constrained_type(self.explore_option, AbstractOptionExplore)
+        #constrained_type(self.policy, AbstractPolicyManager)
+        #constrained_type(self.explore_option, AbstractOptionExplore)
 
     def reset_all(self):
         # deleting all the keras subclassing models
@@ -259,7 +259,8 @@ class AbstractManager(metaclass=ABCMeta):
         if option is a regular option:
         - True if ended in the correct new abstract state, False if the new abstract state is wrong.
         """
-        if obs_equal(self.get_current_state(), obs_manager):
+        #if obs_equal(self.get_current_state(), obs_manager):
+        if SSIM_obs_equal(self.get_current_state(), obs_manager, not self.parameters["GRAY_SCALE"]):
             # option is not done
             return None
 

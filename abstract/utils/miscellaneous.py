@@ -1,4 +1,5 @@
 import numpy as np
+from skimage.measure import compare_ssim
 
 red = '\033[91m'
 green = '\033[92m'
@@ -24,6 +25,20 @@ def obs_equal(obs, other):
         raise NotImplementedError("These observations cannot be compared. \n" +
                                   "First: " + str(type(obs).__name__) + "\n" +
                                   "Second: " + str(type(other).__name__))
+
+
+def SSIM_obs_equal(abstract_state_1, abstract_state_2, multichannel, verbose=False):
+    x = round(compare_ssim(abstract_state_1, abstract_state_2, 3, multichannel=multichannel, gaussian_weights=True,
+                           use_sample_covariance=False), 3)
+    # print(x)
+    if x == 1:
+        return True
+    else:
+        if verbose:
+            print(x)
+        False
+
+
 
 
 def find_element_in_list(element, list_element):

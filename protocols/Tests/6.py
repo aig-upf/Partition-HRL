@@ -20,7 +20,7 @@ data = {
         "manager_file": "a2c.manager.manager_a2c",
         "manager_name": "ManagerA2CPCIntraRewards",
         "max_number_actions": 1000,
-        "verbose": True,
+        "verbose": False,
         "episodes_performances": 100,
         "seeds": range(5),
         "number_episodes": 500000,
@@ -60,7 +60,9 @@ data = {
         "NUMBER_ZONES_MANAGER_X": 4,
         "NUMBER_ZONES_MANAGER_Y": 4,
         "THRESH_BINARY_OPTION": 0,
-        "THRESH_BINARY_MANAGER": 10
+        "THRESH_BINARY_MANAGER": 10,
+
+        "GRAY_SCALE": False
         }
 
 data.update({"ZONE_SIZE_MANAGER_X": data["NUMBER_ZONES_GRIDWORLD_X"] // data["NUMBER_ZONES_MANAGER_X"],
