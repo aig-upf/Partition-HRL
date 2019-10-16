@@ -21,7 +21,7 @@ data = {
         "manager_name": "ManagerA2CPCIntraRewards",
         "max_number_actions": 1000,
         "verbose": True,
-        "episodes_performances": 100,
+        "episodes_performances": 300,
         "seeds": range(10),
         "number_episodes": 10000,
         "learning_rate": 0.001,
@@ -57,10 +57,13 @@ data = {
         "NUMBER_ZONES_GRIDWORLD_Y": 84,
         "NUMBER_ZONES_OPTION_X": 84,
         "NUMBER_ZONES_OPTION_Y": 84,
-        "NUMBER_ZONES_MANAGER_X": 2,
-        "NUMBER_ZONES_MANAGER_Y": 2,
+        "NUMBER_ZONES_MANAGER_X": 4,
+        "NUMBER_ZONES_MANAGER_Y": 4,
         "THRESH_BINARY_OPTION": 0,
-        "THRESH_BINARY_MANAGER": 2
+        "THRESH_BINARY_MANAGER": 2,
+
+        "GRAY_SCALE": False,
+        "SSIM_PRECISION_FACTOR": 2
         }
 
 data.update({"ZONE_SIZE_MANAGER_X": data["NUMBER_ZONES_GRIDWORLD_X"] // data["NUMBER_ZONES_MANAGER_X"],

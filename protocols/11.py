@@ -18,12 +18,12 @@ shared_conv_layers = SharedConvLayers()
 
 data = {
         "manager_file": "a2c.manager.manager_a2c",
-        "manager_name": "ManagerA2CPseudoCount",
+        "manager_name": "ManagerA2CPCIntraRewards",
         "max_number_actions": 1000,
-        "verbose": False,
+        "display_environment": True,
         "episodes_performances": 100,
-        "seeds": range(5),
-        "number_episodes": 500000,
+        "seeds": [3, 4],
+        "number_episodes": 3000,
         "learning_rate": 0.001,
 
         # Policy Options
@@ -37,9 +37,9 @@ data = {
         "SHARED_CONVOLUTION_LAYERS": shared_conv_layers,
         "CRITIC_NETWORK": CriticNetwork,
         "ACTOR_NETWORK": ActorNetwork,
-        "reward_end_option": 0.6,
-        "penalty_end_option": -0.6,
-        "intra_reward_coefficient": 0.1,
+        "reward_end_option": 0.1,
+        "penalty_end_option": -0.1,
+        "penalty_death_option": -1,
 
         # policy manager
         "edge_cost": -0.01,
@@ -47,24 +47,18 @@ data = {
         "probability_random_action_manager": 0.1,
 
         # environment's parameters
-        "env_name": "GE_MazeKeyDoorXL-v0",
+        "env_name": "MontezumaRevenge-v0",
         "obs_wrapper_name": "obs_pixels_stacked_frames",
-        "display_environment": True,
         "stack_images_length": 4,
-        "OPTION_OBSERVATION_IMAGE_WIDTH": None,
-        "OPTION_OBSERVATION_IMAGE_HEIGHT": None,
-        "NUMBER_ZONES_GRIDWORLD_X": 84,
-        "NUMBER_ZONES_GRIDWORLD_Y": 84,
-        "NUMBER_ZONES_OPTION_X": 84,
-        "NUMBER_ZONES_OPTION_Y": 84,
-        "NUMBER_ZONES_MANAGER_X": 4,
-        "NUMBER_ZONES_MANAGER_Y": 4,
+        "NUMBER_ZONES_ENV_X": (2 ** 5) * 5,
+        "NUMBER_ZONES_ENV_Y": 2 * 3 * 5 * 7,
+        "NUMBER_ZONES_OPTION_X": (2 ** 5) * 5,
+        "NUMBER_ZONES_OPTION_Y": 2 * 3 * 5 * 7,
         "THRESH_BINARY_OPTION": 0,
-        "THRESH_BINARY_MANAGER": 10,
-
-        "GRAY_SCALE": False,
-        "SSIM_PRECISION_FACTOR": 3
+        "NUMBER_ZONES_MANAGER_X": 2 ** 3,
+        "NUMBER_ZONES_MANAGER_Y": 3 * 7,
+        "THRESH_BINARY_MANAGER": 0
         }
 
-data.update({"ZONE_SIZE_MANAGER_X": data["NUMBER_ZONES_GRIDWORLD_X"] // data["NUMBER_ZONES_MANAGER_X"],
-             "ZONE_SIZE_MANAGER_Y": data["NUMBER_ZONES_GRIDWORLD_Y"] // data["NUMBER_ZONES_MANAGER_Y"]})
+data.update({"ZONE_SIZE_MANAGER_X": data["NUMBER_ZONES_ENV_X"] // data["NUMBER_ZONES_MANAGER_X"],
+             "ZONE_SIZE_MANAGER_Y": data["NUMBER_ZONES_ENV_Y"] // data["NUMBER_ZONES_MANAGER_Y"]})

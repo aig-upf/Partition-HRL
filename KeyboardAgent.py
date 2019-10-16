@@ -41,6 +41,8 @@ class ShowRenderKeyboard(ShowRender):
         self.human_wants_restart = False
         self.human_sets_pause = False
 
+        self.Print=True
+
     def key_press(self, key, mod):
         if key == 0xff0d: self.human_wants_restart = True
         #if key == 32: self.human_sets_pause = not self.human_sets_pause
@@ -58,15 +60,9 @@ class ShowRenderKeyboard(ShowRender):
             elif self.combined_view:
                 self.set_vanilla_view()
 
-        print(key)
-
         if key in self.list_of_actions_keys:
             a = int(self.list_of_actions_keys.index(key))
             self.human_agent_action = a
-
-
-
-
 
     def key_release(self, key, mod):
         a = 0

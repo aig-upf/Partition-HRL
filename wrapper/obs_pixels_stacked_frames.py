@@ -42,7 +42,7 @@ class ObsPixelStackedWrapper(ObsPixelWrapper):
         if not self.abstract_states:
             self.abstract_states.append(abstract_state)
             print(" Abstract state - ",
-                  [ObsPixelWrapper.SSIM_equal(abstract_state, x, not self.parameters["GRAY_SCALE"], True)
+                  [ObsPixelWrapper.SSIM_equal(abstract_state, x, not self.parameters["GRAY_SCALE"], False)
                    for x in self.abstract_states].index(True),
                   )
             self.old_abstract_state = abstract_state
@@ -54,7 +54,7 @@ class ObsPixelStackedWrapper(ObsPixelWrapper):
                 return
             else:
                 print(" Abstract state - ",
-                      [ObsPixelWrapper.SSIM_equal(abstract_state, x, not self.parameters["GRAY_SCALE"], True)
+                      [ObsPixelWrapper.SSIM_equal(abstract_state, x, not self.parameters["GRAY_SCALE"], False)
                        for x in self.abstract_states].index(True))
 
                 self.old_abstract_state = abstract_state
@@ -62,7 +62,7 @@ class ObsPixelStackedWrapper(ObsPixelWrapper):
         else:
             self.abstract_states.append(abstract_state)
             print(" New Abstract state - ",
-                  [ObsPixelWrapper.SSIM_equal(abstract_state, x, not self.parameters["GRAY_SCALE"], True)
+                  [ObsPixelWrapper.SSIM_equal(abstract_state, x, not self.parameters["GRAY_SCALE"], False)
                    for x in self.abstract_states].index(True))
 
 
@@ -76,7 +76,7 @@ class ObsPixelStackedWrapper(ObsPixelWrapper):
         img_manager = ObsPixelWrapper.make_downsampled_image(image, self.parameters["ZONE_SIZE_MANAGER_X"],
                                                              self.parameters["ZONE_SIZE_MANAGER_Y"])
 
-        #self.check_SSIM_abstract_state(img_manager)
+        self.check_SSIM_abstract_state(img_manager)
 
         return img_manager
 

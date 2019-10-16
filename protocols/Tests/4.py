@@ -62,7 +62,8 @@ data = {
         "THRESH_BINARY_OPTION": 0,
         "THRESH_BINARY_MANAGER": 10,
 
-        "GRAY_SCALE": False
+        "GRAY_SCALE": False,
+        "SSIM_PRECISION_FACTOR": 3
         }
 
 data.update({"ZONE_SIZE_MANAGER_X": data["NUMBER_ZONES_GRIDWORLD_X"] // data["NUMBER_ZONES_MANAGER_X"],

@@ -27,9 +27,9 @@ def obs_equal(obs, other):
                                   "Second: " + str(type(other).__name__))
 
 
-def SSIM_obs_equal(abstract_state_1, abstract_state_2, multichannel, verbose=False):
+def SSIM_obs_equal(abstract_state_1, abstract_state_2, multichannel, precision=3, verbose=False):
     x = round(compare_ssim(abstract_state_1, abstract_state_2, 3, multichannel=multichannel, gaussian_weights=True,
-                           use_sample_covariance=False), 3)
+                           use_sample_covariance=False), precision)
     # print(x)
     if x == 1:
         return True

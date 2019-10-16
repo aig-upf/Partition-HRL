@@ -18,7 +18,7 @@ data = {
         "NUMBER_ZONES_MANAGER_X": 4,
         "NUMBER_ZONES_MANAGER_Y": 4,
         "THRESH_BINARY_OPTION": 0,
-        "THRESH_BINARY_MANAGER": 10
+        "THRESH_BINARY_MANAGER": 15
         }
 
 data.update({"ZONE_SIZE_MANAGER_X": data["NUMBER_ZONES_GRIDWORLD_X"] // data["NUMBER_ZONES_MANAGER_X"],
