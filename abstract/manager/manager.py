@@ -246,6 +246,37 @@ class AbstractManager(metaclass=ABCMeta):
             self.save_results.write_message_in_a_file(self.save_results.manager_score_file_name,
                                                       str(train_episode) + " " + str(np.mean(self.score)) + "\n")
 
+    @staticmethod
+    def get_abstract_state_grid_env_1(position, reward):
+
+        x = position[0]
+        y = position[1]
+        r = reward
+
+        if x == 0 or y == 0:
+            return 0
+
+        elif x == 9 or y == 9:
+            return 0
+
+        elif x == 8 and y == 1 and r == 1:
+            return 1
+
+        elif x == 1 and y == 1:
+            return 2
+
+        elif x <= 8/2 and y <= 8/2:
+            return 3
+
+        elif x > 8/2 and y > 8/2:
+            return 4
+
+        elif x <= 8/2 and y >= 8/2:
+            return 5
+
+        elif x >= 8/2 >= y:
+            return 6
+
     def check_end_option(self, option, obs_manager):
         """
         check if the option ended and if the termination is correct.
@@ -260,18 +291,57 @@ class AbstractManager(metaclass=ABCMeta):
         - True if ended in the correct new abstract state, False if the new abstract state is wrong.
         """
         #if obs_equal(self.get_current_state(), obs_manager):
-        if SSIM_obs_equal(self.get_current_state(), obs_manager, not self.parameters["GRAY_SCALE"]):
+        if SSIM_obs_equal(self.get_current_state(), obs_manager, not self.parameters["GRAY_SCALE"], self.parameters["SSIM_PRECISION_FACTOR"]):
             # option is not done
             return None
 
         else:
+
             # option is done
             if check_type(option, AbstractOptionExplore):
                 # print("explore")
                 return True
 
             elif check_type(option, AbstractOption):
-                correct_transition = obs_equal(obs_manager, self.get_terminal_state(option.index))
+                #correct_transition = obs_equal(obs_manager, self.get_terminal_state(option.index))
+                correct_transition = SSIM_obs_equal(obs_manager, self.get_terminal_state(option.index), not self.parameters["GRAY_SCALE"])
+                # if correct_transition:
+                #    print("correct final state")
+                # else:
+                #    print("wrong final state")
+                return correct_transition
+
+            else:
+                raise Exception(type(option).__name__ + " is not supported")
+
+    def check_end_option(self, option, obs_manager):
+        """
+        check if the option ended and if the termination is correct.
+        :param option: explore option or regular option
+        :param obs_manager:
+        :return:
+        - None if the option is not done.
+        Otherwise:
+        if option is an explore option:
+        - True
+        if option is a regular option:
+        - True if ended in the correct new abstract state, False if the new abstract state is wrong.
+        """
+        #if obs_equal(self.get_current_state(), obs_manager):
+        if SSIM_obs_equal(self.get_current_state(), obs_manager, not self.parameters["GRAY_SCALE"], self.parameters["SSIM_PRECISION_FACTOR"]):
+            # option is not done
+            return None
+
+        else:
+
+            # option is done
+            if check_type(option, AbstractOptionExplore):
+                # print("explore")
+                return True
+
+            elif check_type(option, AbstractOption):
+                #correct_transition = obs_equal(obs_manager, self.get_terminal_state(option.index))
+                correct_transition = SSIM_obs_equal(obs_manager, self.get_terminal_state(option.index), not self.parameters["GRAY_SCALE"])
                 # if correct_transition:
                 #    print("correct final state")
                 # else:
