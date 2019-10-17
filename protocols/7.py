@@ -19,7 +19,7 @@ shared_conv_layers = SharedConvLayers()
 
 data = {
         "manager_file": "a2c.manager.manager_a2c",
-        "manager_name": "ManagerA2CPseudoCount",
+        "manager_name": "ManagerA2C",
         "max_number_actions": 1000,
         "verbose": False,
         "episodes_performances": 100,
