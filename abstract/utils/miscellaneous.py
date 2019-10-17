@@ -20,6 +20,9 @@ def obs_equal(obs, other):
     elif type(obs).__name__ == "int" and type(other).__name__ == "int":
         return obs == other
 
+    elif type(obs).__name__ == "str" and type(other).__name__ == "str":
+        return obs == other
+
     else:
         raise NotImplementedError("These observations cannot be compared. \n" +
                                   "First: " + str(type(obs).__name__) + "\n" +

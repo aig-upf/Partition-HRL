@@ -42,6 +42,8 @@ class AbstractManager(metaclass=ABCMeta):
         self.successful_transition = deque(maxlen=self.deque_max_length)  # A list of 0 and 1 of size <=100.
         self.score = deque(maxlen=self.deque_max_length)
 
+        self.KEY = False
+
         # checks that policy and options have the right type.
         constrained_type(self.policy, AbstractPolicyManager)
         constrained_type(self.explore_option, AbstractOptionExplore)
@@ -253,12 +255,14 @@ class AbstractManager(metaclass=ABCMeta):
                                                       str(train_episode) + " " + str(np.mean(self.score)) + "\n")
 
 
-    @staticmethod
-    def get_position_abstract_state_gridenv_GE_MazeKeyDoor_v0(position, reward):
-
+    def get_position_abstract_state_gridenv_GE_MazeKeyDoor_v0(self, position, reward):
         #initial state returned when the environments is resetted
         if position is None:
-            return 1
+            self.KEY = False
+            return "abstract state 1"
+
+        if reward > 0:
+            print(position, reward)
 
         x = position[0]
         y = position[1]
@@ -266,34 +270,49 @@ class AbstractManager(metaclass=ABCMeta):
 
         # dying
         if x == 0 or y == 0:
-            return 0
+            return "died"
         # dying
         elif x == 9 or y == 9:
-            return 0
-        # key taken
-        elif x == 8 and y == 1 and r == 1:
-            return 5
-        # door
-        elif x == 1 and y == 1:
-            # door open
-            if r == 1:
-                return 7
-            # door close
-            else:
-                return 6
+            return "died"
 
-        #abstract state 4
-        elif x <= 8 / 2 and y <= 8 / 2:
-            return 4
-        # abstract state 2
-        elif x > 8 / 2 and y > 8 / 2:
-            return 2
-        # abstract state 1
-        elif x <= 8 / 2 and y >= 8 / 2:
-            return 1
-        #abstract state 3
-        elif x >= 8 / 2 >= y:
-            return 3
+        if self.KEY == False:
+            # key taken
+            if x == 8 and y == 1 and r == 1:
+                self.KEY = True
+                return "key taken"
+            # door close
+            elif x == 1 and y == 1:
+                return "door close"
+            #abstract state 4
+            elif x <= 8 / 2 and y <= 8 / 2:
+                return "abstract state 4"
+            # abstract state 2
+            elif x > 8 / 2 and y > 8 / 2:
+                return "abstract state 2"
+            # abstract state 1
+            elif x <= 8 / 2 and y >= 8 / 2:
+                return "abstract state 1"
+            #abstract state 3
+            elif x >= 8 / 2 >= y:
+                return "abstract state 3"
+
+        if self.KEY == True:
+            # door close
+            if x == 1 and y == 1:
+                return "door open"
+            #abstract state 4
+            elif x <= 8 / 2 and y <= 8 / 2:
+                return "abstract state 4 with key"
+            # abstract state 2
+            elif x > 8 / 2 and y > 8 / 2:
+                return "abstract state 2 with key"
+            # abstract state 1
+            elif x <= 8 / 2 and y >= 8 / 2:
+                return "abstract state 1 with key"
+            #abstract state 3
+            elif x >= 8 / 2 >= y:
+                return "abstract state 3 with key"
+
 
     def check_end_option(self, option, obs_manager):
         """
