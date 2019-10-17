@@ -37,13 +37,10 @@ class GraphPlanningPolicyManager(AbstractPolicyManager):
             s += ": " + str(self.transitions[idx]) + "\n"
         return s[:-1]
 
-    def reset(self, new_state):
-        """
-        add the new_state in the archive if it does not exist and update the current_state_index.
-        *NEVER* make a new transition when resetting.
-        :param new_state:
-        :return:
-        """
+    def reset_2(self, position, value):
+
+        new_state = GraphPlanningPolicyManager.get_position_abstract_state_gridenv_GE_MazeKeyDoor_v0(position, value)
+
         self.current_path = []
         if not self.states:  # first state added
             self.states = [new_state]
@@ -61,6 +58,101 @@ class GraphPlanningPolicyManager(AbstractPolicyManager):
                 new_state_index = len(self.states) - 1
 
             self.current_state_index = new_state_index
+
+    def reset(self, new_state):
+        """
+        add the new_state in the archive if it does not exist and update the current_state_index.
+        *NEVER* make a new transition when resetting.
+        :param new_state:
+        :return:
+        """
+
+        self.current_path = []
+        if not self.states:  # first state added
+            self.states = [new_state]
+            self.transitions = [[]]
+            self.number_explorations = [0]
+            self.current_state_index = 0
+
+        else:
+            new_state_index = find_element_in_list(new_state, self.states)  # bottleneck. Maybe hash states.
+
+            if new_state_index is None:
+                self.states.append(new_state)
+                self.transitions.append([])
+                self.number_explorations.append(0)
+                new_state_index = len(self.states) - 1
+
+            self.current_state_index = new_state_index
+
+    @staticmethod
+    def get_position_abstract_state_gridenv_GE_MazeKeyDoor_v0(position, reward):
+
+        print(position)
+
+        #initial state returned when the environments is resetted
+        if position is None:
+            return 1
+
+        x = position[0]
+        y = position[1]
+        r = reward
+
+        # dying
+        if x == 0 or y == 0:
+            return 0
+        # dying
+        elif x == 9 or y == 9:
+            return 0
+        # key taken
+        elif x == 8 and y == 1 and r == 1:
+            return 5
+        # door
+        elif x == 1 and y == 1:
+            # door open
+            if r == 1:
+                return 7
+            # door close
+            else:
+                return 6
+
+        #abstract state 4
+        elif x <= 8 / 2 and y <= 8 / 2:
+            return 4
+        # abstract state 2
+        elif x > 8 / 2 and y > 8 / 2:
+            return 2
+        # abstract state 1
+        elif x <= 8 / 2 and y >= 8 / 2:
+            return 1
+        #abstract state 3
+        elif x >= 8 / 2 >= y:
+            return 3
+
+    def update_policy_2(self, state, value):
+        new_state = GraphPlanningPolicyManager.get_position_abstract_state_gridenv_GE_MazeKeyDoor_v0(state, value)
+        edge_value = value + self.parameters["edge_cost"]
+        new_state_index = find_element_in_list(new_state, self.states)  # bottleneck. Maybe hash states.
+
+        if new_state_index is None:
+
+            self.states.append(new_state)
+            self.number_explorations.append(0)
+
+            new_state_index = len(self.states) - 1
+            self.transitions.append([])  # new edge without vertex
+            self.transitions[self.current_state_index].append((new_state_index, edge_value))  # new vertex with a value
+
+            print(self.states)
+            print(self.transitions)
+
+        else:
+            if new_state_index not in [t[0] for t in self.transitions[self.current_state_index]]:
+                self.transitions[self.current_state_index].append((new_state_index, edge_value))
+
+        self.update_max_degree()
+
+        self.current_state_index = new_state_index
 
     def update_policy(self, new_state, value):
         edge_value = value + self.parameters["edge_cost"]
@@ -138,6 +230,8 @@ class GraphPlanningPolicyManager(AbstractPolicyManager):
                 # choose at *random* among the most valuable vertices
                 most_valued_vertex = np.random.choice(most_valued_vertices)
 
+                print(self.states, "\n", self.transitions)
+                #import pdb; pdb.set_trace()
                 assert self.current_state_index != most_valued_vertex, \
                     "there is a transition from current_state_index but the max distance is - inf !"
                 if self.parameters["verbose"]:
@@ -329,7 +423,6 @@ class GraphPseudoCountReward(GraphPlanningPolicyManager):
             most_valued_vertices = np.nonzero(np.array(distances) == np.max(distances))[0]
             # choose at *random* among the most valuable vertices
             most_valued_vertex = np.random.choice(most_valued_vertices)
-
             assert self.current_state_index != most_valued_vertex, \
                 "there is a transition from current_state_index but the max distance is - inf !"
             self.current_path = self.make_sub_path(predecessors, self.current_state_index, most_valued_vertex)

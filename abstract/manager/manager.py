@@ -61,7 +61,12 @@ class AbstractManager(metaclass=ABCMeta):
 
     def reset(self, initial_state):
         self.score.append(0)
-        self.policy.reset(initial_state)
+        self.polity.reset(initial_state)   # CHANGED CHANGED CHANGED CHANGED CHANGED CHANGED
+
+
+    def reset_2(self, position, value):
+        self.score.append(0)
+        self.policy.reset_2(position, value)
 
     def _train_simulate(self, env, train_episode=None):
         """
@@ -80,7 +85,7 @@ class AbstractManager(metaclass=ABCMeta):
         # The initial observation
         o_r_d_i = [env.reset()] + [None]*3  # o_r_d_i means "Observation_Reward_Done_Info"
         # Reset all the manager parameters
-        self.reset(o_r_d_i[0]["manager"])
+        self.reset_2(o_r_d_i[3], o_r_d_i[1]) # self.reset(o_r_d_i[0]["manager"]) MODIFIED MODIFIED MODIFIED MODIFIED
         done = False
         current_option = None
         # Render the current state
@@ -102,7 +107,7 @@ class AbstractManager(metaclass=ABCMeta):
                 self.show_render.render(o_r_d_i[0])
 
             # check if the option ended correctly
-            correct_termination = self.check_end_option(current_option, o_r_d_i[0]["manager"])
+            correct_termination = self.check_end_option(current_option, o_r_d_i)#o_r_d_i[0]["manager"])  #### CHANGED CHANGED CHANGED CHANGED
 
             # update the option
             current_option.update_option(o_r_d_i, action, correct_termination, train_episode)
@@ -171,7 +176,8 @@ class AbstractManager(metaclass=ABCMeta):
 
     def _update_policy(self, o_r_d_i, option):
         # print("option " + str(option.index) + " score = " + str(option.score))
-        self.policy.update_policy(o_r_d_i[0]["manager"], option.score)
+        #self.policy.update_policy(o_r_d_i[0]["manager"], option.score)
+        self.policy.update_policy_2(o_r_d_i[3]["position"], option.score)
 
     def train(self, environment, parameters, seed=0):
         """
@@ -246,6 +252,37 @@ class AbstractManager(metaclass=ABCMeta):
             self.save_results.write_message_in_a_file(self.save_results.manager_score_file_name,
                                                       str(train_episode) + " " + str(np.mean(self.score)) + "\n")
 
+
+    @staticmethod
+    def get_position_abstract_state_gridenv_GE_MazeKeyDoor_v0(position, reward):
+        x = position[0]
+        y = position[1]
+        r = reward
+
+        if x == 0 or y == 0:
+            return 0
+
+        elif x == 9 or y == 9:
+            return 0
+
+        elif x == 8 and y == 1 and r == 1:
+            return 1
+
+        elif x == 1 and y == 1:
+            return 2
+
+        elif x <= 8 / 2 and y <= 8 / 2:
+            return 3
+
+        elif x > 8 / 2 and y > 8 / 2:
+            return 4
+
+        elif x <= 8 / 2 and y >= 8 / 2:
+            return 5
+
+        elif x >= 8 / 2 >= y:
+            return 6
+
     def check_end_option(self, option, obs_manager):
         """
         check if the option ended and if the termination is correct.
@@ -259,6 +296,9 @@ class AbstractManager(metaclass=ABCMeta):
         if option is a regular option:
         - True if ended in the correct new abstract state, False if the new abstract state is wrong.
         """
+
+        obs_manager = self.get_position_abstract_state_gridenv_GE_MazeKeyDoor_v0(obs_manager[3]["position"], obs_manager[0])
+
         if obs_equal(self.get_current_state(), obs_manager):
             # option is not done
             return None
