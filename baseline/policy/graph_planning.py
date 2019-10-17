@@ -159,9 +159,6 @@ class GraphPlanningPolicyManager(AbstractPolicyManager):
             self.transitions.append([])  # new edge without vertex
             self.transitions[self.current_state_index].append((new_state_index, edge_value))  # new vertex with a value
 
-            print(self.states)
-            print(self.transitions)
-
         else:
             if new_state_index not in [t[0] for t in self.transitions[self.current_state_index]]:
                 self.transitions[self.current_state_index].append((new_state_index, edge_value))
@@ -215,6 +212,9 @@ class GraphPlanningPolicyManager(AbstractPolicyManager):
         return self.states[next_state_index]
 
     def find_best_action(self, train_episode=None):
+        print(self.states)
+        print(self.transitions)
+
         if self.current_state_index is None or not self.transitions[self.current_state_index]:
             return None  # explore
 
