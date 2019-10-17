@@ -309,7 +309,7 @@ class AbstractManager(metaclass=ABCMeta):
         - True if ended in the correct new abstract state, False if the new abstract state is wrong.
         """
 
-        obs_manager = self.get_position_abstract_state_gridenv_GE_MazeKeyDoor_v0(obs_manager[3]["position"], obs_manager[0])
+        obs_manager = self.get_position_abstract_state_gridenv_GE_MazeKeyDoor_v0(obs_manager[3]["position"], obs_manager[1])
 
         if obs_equal(self.get_current_state(), obs_manager):
             # option is not done

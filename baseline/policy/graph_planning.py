@@ -92,6 +92,9 @@ class GraphPlanningPolicyManager(AbstractPolicyManager):
         if position is None:
             return 1
 
+        if reward > 0:
+            print(position, reward)
+
         x = position[0]
         y = position[1]
         r = reward
@@ -228,7 +231,7 @@ class GraphPlanningPolicyManager(AbstractPolicyManager):
                 # choose at *random* among the most valuable vertices
                 most_valued_vertex = np.random.choice(most_valued_vertices)
 
-                print(self.states, "\n", self.transitions)
+                #print(self.states, "\n", self.transitions)
                 #import pdb; pdb.set_trace()
                 assert self.current_state_index != most_valued_vertex, \
                     "there is a transition from current_state_index but the max distance is - inf !"
