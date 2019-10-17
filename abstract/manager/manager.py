@@ -61,12 +61,12 @@ class AbstractManager(metaclass=ABCMeta):
 
     def reset(self, initial_state):
         self.score.append(0)
-        self.polity.reset(initial_state)   # CHANGED CHANGED CHANGED CHANGED CHANGED CHANGED
+        self.policy.reset(initial_state)
 
 
     def reset_2(self, position, value):
         self.score.append(0)
-        self.policy.reset_2(position, value)
+        self.policy.reset_2(position, value)  # CHANGED CHANGED CHANGED CHANGED CHANGED CHANGED
 
     def _train_simulate(self, env, train_episode=None):
         """
@@ -255,33 +255,45 @@ class AbstractManager(metaclass=ABCMeta):
 
     @staticmethod
     def get_position_abstract_state_gridenv_GE_MazeKeyDoor_v0(position, reward):
+
+        #initial state returned when the environments is resetted
+        if position is None:
+            return 1
+
         x = position[0]
         y = position[1]
         r = reward
 
+        # dying
         if x == 0 or y == 0:
             return 0
-
+        # dying
         elif x == 9 or y == 9:
             return 0
-
+        # key taken
         elif x == 8 and y == 1 and r == 1:
-            return 1
-
-        elif x == 1 and y == 1:
-            return 2
-
-        elif x <= 8 / 2 and y <= 8 / 2:
-            return 3
-
-        elif x > 8 / 2 and y > 8 / 2:
-            return 4
-
-        elif x <= 8 / 2 and y >= 8 / 2:
             return 5
+        # door
+        elif x == 1 and y == 1:
+            # door open
+            if r == 1:
+                return 7
+            # door close
+            else:
+                return 6
 
+        #abstract state 4
+        elif x <= 8 / 2 and y <= 8 / 2:
+            return 4
+        # abstract state 2
+        elif x > 8 / 2 and y > 8 / 2:
+            return 2
+        # abstract state 1
+        elif x <= 8 / 2 and y >= 8 / 2:
+            return 1
+        #abstract state 3
         elif x >= 8 / 2 >= y:
-            return 6
+            return 3
 
     def check_end_option(self, option, obs_manager):
         """

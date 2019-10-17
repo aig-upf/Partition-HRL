@@ -88,8 +88,6 @@ class GraphPlanningPolicyManager(AbstractPolicyManager):
     @staticmethod
     def get_position_abstract_state_gridenv_GE_MazeKeyDoor_v0(position, reward):
 
-        print(position)
-
         #initial state returned when the environments is resetted
         if position is None:
             return 1
