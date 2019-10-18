@@ -5,7 +5,7 @@
 Usage:
     Montezuma_RL [options] <protocol>
 
-where
+Arguments:
     <protocol> is the name of the Python file describing the parameters of the manager.
     The protocol file is available in protocols/<protocol>.py
     The parameters set in this file can be overwritten by the options below, specified in the command line.
@@ -13,6 +13,7 @@ where
 Options:
     -h                          Display this help.
     -o PATH                     Output path.
+    --tests                     Run unit tests
 """
 
 import gym
@@ -23,10 +24,11 @@ import microgridRLsimulator
 from docopt import docopt
 import importlib.util
 import os
+import sys
 import numpy as np
 
 import matplotlib
-if os.environ.get('DISPLAY','') == '':
+if os.environ.get('DISPLAY', '') == '':
     print('no display found. Using non-interactive Agg backend')
     matplotlib.use('Agg')
 
@@ -126,19 +128,25 @@ class Experiment(object):
 if __name__ == '__main__':
     # Parse command line arguments
     args = docopt(__doc__)
+    if args['--tests']:
+        import unittest
+        from tests.test_GraphPlanning import *
+        sys.argv = sys.argv[0]
+        unittest.main()
 
-    # Get the protocol info
-    path_protocol = 'protocols.' + args['<protocol>']
-    parameters = importlib.import_module(path_protocol).data
-    parameters["path"] = path_protocol
+    else:
+        # Get the protocol info
+        path_protocol = 'protocols.' + args['<protocol>']
+        parameters = importlib.import_module(path_protocol).data
+        parameters["path"] = path_protocol
 
-    # Create an experiment
-    experiment = Experiment(parameters)
+        # Create an experiment
+        experiment = Experiment(parameters)
 
-    # Run the experiment : train and simulate the manager and store the results
-    experiment.run()
+        # Run the experiment : train and simulate the manager and store the results
+        experiment.run()
 
-    # Plot results
-    experiment.plot("manager", title="manager's score", xlabel="epochs", ylabel="total reward in epochs")
-    experiment.plot("transitions", title="success rate of options' transitions", xlabel="number of options executed",
-                    ylabel="% of successful option executions")
+        # Plot results
+        experiment.plot("manager", title="manager's score", xlabel="epochs", ylabel="total reward in epochs")
+        experiment.plot("transitions", title="success rate of options' transitions", xlabel="number of options executed",
+                        ylabel="% of successful option executions")
