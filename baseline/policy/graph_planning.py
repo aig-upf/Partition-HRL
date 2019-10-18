@@ -212,53 +212,13 @@ class GraphPlanningPolicyManager(AbstractPolicyManager):
         return self.states[next_state_index]
 
     def find_best_action(self, train_episode=None):
-        print(self.states)
-        print(self.transitions)
 
         if self.current_state_index is None or not self.transitions[self.current_state_index]:
             return None  # explore
 
         if len(self.current_path) <= 1:  # The current path is empty, make a new path.
 
-            # compute the global best path from the current state index
-            predecessors, distances = self.find_best_path(self.current_state_index)
-            # make a new path for exploring if needed
-            state_idx_to_explore = self.get_state_to_explore(distances)
-
-            if np.random.rand() < self.parameters["probability_random_action_manager"] and train_episode is not None \
-                    and state_idx_to_explore is not None:
-
-                self.current_path = self.make_sub_path(predecessors, self.current_state_index, state_idx_to_explore)
-                # then explore this state
-                self.current_path.append(None)
-                self.number_explorations[state_idx_to_explore] += 1
-                if self.parameters["verbose"]:
-                    print(red + "explore" + white)
-                    print(self)
-                    print("target state to explore " + str(state_idx_to_explore))
-                    print("new_path " + str(self.current_path))
-
-            else:
-                # make a new path for exploiting
-                # compute the vertices with the highest value, excluding the root
-                distances[self.current_state_index] = -float("inf")
-                most_valued_vertices = np.nonzero(np.array(distances) == np.max(distances))[0]
-                # choose at *random* among the most valuable vertices
-                most_valued_vertex = np.random.choice(most_valued_vertices)
-
-                #print(self.states, "\n", self.transitions)
-                #import pdb; pdb.set_trace()
-                assert self.current_state_index != most_valued_vertex, \
-                    "there is a transition from current_state_index but the max distance is - inf !"
-                if self.parameters["verbose"]:
-                    print("most_valued_vertex: " + str(most_valued_vertex))
-                self.current_path = self.make_sub_path(predecessors, self.current_state_index, most_valued_vertex)
-                if self.parameters["verbose"]:
-                    print(self)
-                    print("target = " + str(most_valued_vertex))
-                    print("new_path " + str(self.current_path))
-
-            # self.current_path has length > 1
+            self.set_best_path(train_episode)  # self.current_path always starts by self.current_state_index
             self.current_path.pop(0)
             next_state = self.current_path[0]
             # return index of the next option
@@ -292,7 +252,7 @@ class GraphPlanningPolicyManager(AbstractPolicyManager):
                 self.current_path = []
                 return self.find_best_action(train_episode)
 
-    def find_best_path(self, root):
+    def run_bellman_ford(self, root):
         """
         Bellman-Ford algorithm to get the longest path (highest value)
         :param root: the origin of the path
@@ -310,6 +270,14 @@ class GraphPlanningPolicyManager(AbstractPolicyManager):
                         distances[target] = distances[origin] + value
                         predecessors[target] = origin
 
+        # detection of positive loops
+        error_message = "\nPositive loop detected \nCheck your state abstraction \nthe problem may happen because: " \
+                        "\nthe intersection between sets of abstract states before and after getting a positive " \
+                        "reward is not empty \nthe policy is not properly reset at the end of the episode."
+
+        for origin in range(number_vertices):
+            for (target, value) in self.transitions[origin]:
+                assert distances[target] >= distances[origin] + value, error_message
         return predecessors, distances
 
     def make_sub_path(self, predecessors, origin, target):
@@ -317,6 +285,45 @@ class GraphPlanningPolicyManager(AbstractPolicyManager):
             return [target]
         else:
             return self.make_sub_path(predecessors, origin, predecessors[target]) + [target]
+
+    def set_best_path(self, train_episode=None):
+        # compute the global best path from the current state index
+        predecessors, distances = self.run_bellman_ford(self.current_state_index)
+        # make a new path for exploring if needed
+        state_idx_to_explore = self.get_state_to_explore(distances)
+
+        if np.random.rand() < self.parameters["probability_random_action_manager"] and train_episode is not None \
+                and state_idx_to_explore is not None:
+
+            self.current_path = self.make_sub_path(predecessors, self.current_state_index, state_idx_to_explore)
+            # then explore this state
+            self.current_path.append(None)
+            self.number_explorations[state_idx_to_explore] += 1
+            if self.parameters["verbose"]:
+                print(red + "explore" + white)
+                print(self)
+                print("target state to explore " + str(state_idx_to_explore))
+                print("new_path " + str(self.current_path))
+
+        else:
+            # make a new path for exploiting
+            # compute the vertices with the highest value, excluding the root
+            distances[self.current_state_index] = -float("inf")
+            most_valued_vertices = np.nonzero(np.array(distances) == np.max(distances))[0]
+            # choose at *random* among the most valuable vertices
+            most_valued_vertex = np.random.choice(most_valued_vertices)
+
+            # print(self.states, "\n", self.transitions)
+            # import pdb; pdb.set_trace()
+            assert self.current_state_index != most_valued_vertex, \
+                "there is a transition from current_state_index but the max distance is - inf !"
+            if self.parameters["verbose"]:
+                print("most_valued_vertex: " + str(most_valued_vertex))
+            self.current_path = self.make_sub_path(predecessors, self.current_state_index, most_valued_vertex)
+            if self.parameters["verbose"]:
+                print(self)
+                print("target = " + str(most_valued_vertex))
+                print("new_path " + str(self.current_path))
 
     @staticmethod
     def _get_connected_component(distances):
@@ -431,7 +438,7 @@ class GraphPseudoCountReward(GraphPlanningPolicyManager):
                 print("path is empty")
 
             # compute the global best path from the current state index
-            predecessors, distances = self.find_best_path(self.current_state_index)
+            predecessors, distances = self.run_bellman_ford(self.current_state_index)
 
             # make a new path for exploiting
             # compute the vertices with the highest value, excluding the root
